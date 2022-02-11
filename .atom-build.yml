@@ -1,0 +1,5 @@
+cmd: 'sh build.sh'
+sh: true
+
+errorMatch:
+  - "[Ee](rror|xception)"

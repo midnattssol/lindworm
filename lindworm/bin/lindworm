@@ -1,0 +1,11 @@
+#!/bin/sh
+# Compiles a Lindworm file to Python and runs it.
+
+dir="/tmp/lindworm"
+if ! [ -d $dir ]; then
+    mkdir $dir
+fi
+
+target=$(date +"$dir/%F-%T-%N.py")
+sigurd $1 --target $target || exit 1
+python $target

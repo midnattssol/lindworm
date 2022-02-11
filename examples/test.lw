@@ -1,0 +1,6 @@
+#!/usr/bin/env lindworm
+import operator as op
+
+greeting = None
+greeter = -> print(f"So I just wanted to say, {_}")
+greeter()

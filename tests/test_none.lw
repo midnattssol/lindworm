@@ -1,0 +1,36 @@
+import operator as op
+
+
+# None-coalesce index.
+def test_none_index(unittester):
+    a = None
+    unittester.assertEqual((a ?? 10), 10)
+    unittester.assertIsNone(a?[2])
+    unittester.assertIsNone(a?.__len__)
+
+    a = [1, 2, 3, 4]
+    unittester.assertEqual((a ?? 10), [1, 2, 3, 4])
+    unittester.assertIsNotNone(a?[2])
+    unittester.assertIsNotNone(a?.__len__)
+
+# None-coalesce call and curry.
+def test_none_call(unittester):
+    maybe_function = None
+    unittester.assertIsNone((maybe_function?(10, 20)))
+    unittester.assertIsNone((maybe_function?$(10)))
+
+    maybe_function = op.add
+    unittester.assertEqual((maybe_function?(10, 20)), 30)
+    unittester.assertIsNotNone((maybe_function?$(10)))
+
+# None-coalesce-equals.
+def test_none_coalesce(unittester):
+    maybe_number = None
+    maybe_number ??= 100
+
+    unittester.assertEqual(maybe_number, 100)
+
+    maybe_number = 13
+    maybe_number ??= 100
+
+    unittester.assertEqual(maybe_number, 13)

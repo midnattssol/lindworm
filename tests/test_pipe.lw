@@ -1,0 +1,9 @@
+import operator as op
+
+def test_pipes(unittester):
+    example_0 = [10, 20]
+    example_1 = {"start": 3, "stop": 5}
+
+    unittester.assertEqual(repr(example_0), (example_0 |> repr))
+    unittester.assertEqual(op.add(*example_1), (example_1 |*> op.add))
+    unittester.assertEqual(dict(**example_1), (example_1 |**> dict))

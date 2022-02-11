@@ -1,0 +1,10 @@
+__pycache__/
+*.log
+
+# Package info
+build/
+*.egg-info/
+
+# Compiled Lindworm files
+test_*.py
+*.lw.py

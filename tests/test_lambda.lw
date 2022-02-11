@@ -1,0 +1,8 @@
+def test_lambda(unittester):
+    # Normal lambda
+    unittester.assertEqual(( -> _ ** 2)(2), 4)
+
+    # # Nested lambda (does not compile correctly)
+    # unittester.assertTrue(
+    #     7 == ( -> _ + (-> _))(2)(5)
+    # )

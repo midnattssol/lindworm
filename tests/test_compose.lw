@@ -1,0 +1,20 @@
+import operator as op
+import random
+
+def test_compose(unittester):
+
+    # Generate a bunch of subtests for simple composition.
+    sum_times_two = (op.add ..> (-> x * 2))
+#     sum_times_two_left = ((-> x * 2) <.. op.add)
+#     sum_times_two_py = lambda a, b: 2 * (a + b)
+#
+#     for _ in range(10):
+#         a, b = random.randint(0, 1024), random.randint(0, 1024)
+#         with self.subTest(a=a, b=b):
+#             self.assertEqual(
+#                 sum_times_two(a, b),
+#                 sum_times_two_py(a, b),
+#             )
+#
+#
+#     # todo: add star tests

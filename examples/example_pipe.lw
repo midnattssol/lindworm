@@ -1,0 +1,7 @@
+# Numpy vector shorthands.
+assert "[10 20 30]" == (v[10, 20, 30] |> repr)
+assert "10 20 30" == (v[10, 20, 30] |*> repr)
+
+item = {"a": "b"}
+
+assert item == (item |**> dict)
