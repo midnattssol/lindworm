@@ -27,13 +27,14 @@ def curry(fn: t.Callable, *args, **kwargs) -> t.Callable:
     return lambda *args_, **kwargs_: fn(*args, *args_, **kwargs, **kwargs)
 
 
-def compose(left, right, left_to_right, *, stars=0) -> t.Callable:
-    if left_to_right:
+def compose(left, right, reverse, num_stars) -> t.Callable:
+    """Returns left `of` right, or right `of` left if reversed."""
+    if reverse:
         left, right = right, left
 
-    if stars == 1:
+    if num_stars == 1:
         return lambda *args, **kwargs: left(*right(*args, **kwargs))
-    if stars == 2:
+    if num_stars == 2:
         return lambda *args, **kwargs: left(**right(*args, **kwargs))
 
     return lambda *args, **kwargs: left(right(*args, **kwargs))

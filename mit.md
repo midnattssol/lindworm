@@ -26,7 +26,7 @@ repeat_last
 adjacent
 groupby_transform
 collapse
-interleave(longest, evenly)
+interleave(longest evenly)
 convolve
 flatten
 ilen
@@ -76,8 +76,8 @@ iter_except
 locate
 rlocate
 replace
-numeric_range,
+numeric_range
 
 iterate
-difference,
+difference
 consume

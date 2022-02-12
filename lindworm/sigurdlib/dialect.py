@@ -25,7 +25,7 @@ class PythonDialectTokenization():
     # Workaround so that this moves along with stdout
     logger: io.StringIO = dc.field(default_factory=lambda: sys.stdout)
 
-    def to_python(self):
+    def to_python(self) -> str:
         return NotImplemented
 
     @classmethod
@@ -34,9 +34,9 @@ class PythonDialectTokenization():
             return cls.from_bytes(file.read(), *args, **kwargs)
 
     @classmethod
-    def from_bytes(cls, s, *args, **kwargs):
-        tokens = SimpleToken.tokenize(s)
-        item = cls(list(tokens), s.decode("utf-8"), *args, **kwargs)
+    def from_bytes(cls, item: bytes, *args, **kwargs):
+        tokens = SimpleToken.tokenize(item)
+        item = cls(list(tokens), item.decode("utf-8"), *args, **kwargs)
         item.rebuild_source(0)
         return item
 
@@ -46,9 +46,6 @@ class PythonDialectTokenization():
             items = cson.load(file)
             rules = [Rule(k, **v, priority=constants.priority_of(constants.LPAR) - i) for i, (k, v) in enumerate(items.items())]
         return rules
-
-    def __iter__(self):
-        return iter(self.tokens)
 
     def rebuild_source(self, indent=0):
         """Rebuilds the source attribute from tokens."""
@@ -62,3 +59,6 @@ class PythonDialectTokenization():
                 self.source += (" " * indent * token.indent)
 
         return self
+
+    def __iter__(self):
+        return iter(self.tokens)

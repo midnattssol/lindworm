@@ -6,5 +6,7 @@ build/
 *.egg-info/
 
 # Compiled Lindworm files
-test_*.py
+examples/*.py
+tests/*.py
+!tests/__init__.py
 *.lw.py

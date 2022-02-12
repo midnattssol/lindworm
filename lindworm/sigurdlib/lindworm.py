@@ -218,15 +218,17 @@ class LindwormTokenization(PythonDialectTokenization):
         for index, token in token_items:
             self.logger.write(f"TOKEN | {token} {done} {direction}\n")
 
-            # Avoid going into a new line if the line is balanced.
             if (
-                not any(balanced_tokens_depths.values())
-                and token.exact_type == constants.NEWLINE
-            ):
-                break
-
-            if (
-                token.exact_type in TERM
+                (
+                    # Avoid going into a new line if the line is balanced.
+                    token.exact_type == constants.NEWLINE
+                    and not any(balanced_tokens_depths.values())
+                )
+                or (
+                    # Avoid going backwards into assignments.
+                    token.exact_type in TERM
+                    and direction == -1
+                )
                 or (
                     token.exact_type in balanced_tokens_depths.keys()
                     and not any(balanced_tokens_depths.values())
@@ -279,14 +281,14 @@ class LindwormTokenization(PythonDialectTokenization):
         items = list(items)
         mapping = {}
         consumed = set()
-        print(items)
-        exit()
+        self.logger.write(f"SUBMATCHES | {items}\n")
 
-        bucket_items = mit.bucket(items, lambda x: x.group(1))
+        bucket_items = mit.bucket(items, lambda x: x.group(1).strip())
 
         mapping = {}
         maxtoken, mintoken = -np.inf, np.inf
         token_set = set()
+        sometokenstuff = {}
         token_mapping = {}
 
         # Group format: Use a named capture group.
@@ -303,6 +305,8 @@ class LindwormTokenization(PythonDialectTokenization):
             maxtoken = max(maxtoken, num)
             mintoken = min(mintoken, num)
             token_set.add(num)
+            sometokenstuff[num] = sometokenstuff.get(num, [])
+            sometokenstuff[num].append(token_submatch)
 
         # Gets all items between the maximum and minimum token.
         for submatch in {maxtoken, mintoken} - {-np.inf, np.inf}:
@@ -315,12 +319,26 @@ class LindwormTokenization(PythonDialectTokenization):
                 assert token_indices["consumed"]
                 inner_pointer = max(token_indices["consumed"]) if direction == 1 else min(token_indices["consumed"])
 
-                token_group = [self.tokens[i].string for i in token_indices["output"]]
-                token_group_string = "".join(token_group)
+                matched_items = [self.tokens[i].string for i in token_indices["output"]]
+                matched_items_string = "".join(matched_items)
 
-                token_name = "{" + f"token:{direction * (n+1)}" + "}"
-                mapping[token_name] = token_group_string
+                # Find all of the token subgroups that were based on this particular match.
+                # Then processes them in a for loop since they might have different formattings.
+                if (direction * (n + 1)) in sometokenstuff:
+                    for token_submatch in sometokenstuff[direction * (n + 1)]:
 
+                        token_name = token_submatch.group()
+
+                        # MAGIC
+                        # HACK: Should change internal class mechanics to be able to operate on strings as well.
+                        temp = token_name.replace("token", "group")
+                        temp = temp.replace(re.search(r"-?\d+", temp).group(), "0")
+                        # MAGIC
+
+                        replacer = utils.Replacer("(.*)", temp)
+                        mapping[token_name] = replacer.format(matched_items_string)
+
+                # what does this do
                 token_mapping[direction * (n + 1)] = token_indices
 
         # Only consume the items that should be.

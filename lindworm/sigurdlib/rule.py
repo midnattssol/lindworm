@@ -8,7 +8,7 @@ import regex as re
 from .constants import constants
 from utils import *
 
-FORMAT_REGEX = re.compile(r"\{([^{}:]*):(-?[^{}\-:]*)(?>->([^{}]*))?\}")
+# FORMAT_REGEX = re.compile(r"\{([^{}:]*):(-?[^{}\-:]*)(?>->([^{}]*))?\}")
 
 
 @dc.dataclass(eq=True, unsafe_hash=True)

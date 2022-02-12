@@ -1,2 +1,2 @@
 #!/bin/sh
-sigurd "tests" --dir --log "/home/lunalm/Documents/programming/python/lindworm/log.log" --force-recompile
+sigurd "examples" --dir --log "sigurd_log.log" --force-recompile

@@ -16,6 +16,7 @@ CASE_SHORTHANDS = {
     "U": str.upper,
     "S": str.swapcase,
 }
+
 MISC_SHORTHANDS = {
     "ju-l": str.ljust,
     "ju-r": str.rjust,
@@ -31,6 +32,7 @@ MISC_SHORTHANDS = {
     "zfi": str.zfill,
     "len": lambda s: str(len(s))
 }
+
 SHORTHANDS = {**CASE_SHORTHANDS, **MISC_SHORTHANDS}
 
 FORMAT_REGEX = re.compile(r"\{([^{}:]*):(\s*-?[^{}\-:]*)(?>->([^{}]*))?\}")
@@ -46,14 +48,30 @@ class Replacer:
     regex: re.Regex
     fmtstr: ReplacerString
 
-    def format(self, arg: str) -> str:
-        return self.format_match(re.match(self.regex, arg))
+    def format(self, arg: str, args=None) -> str:
+        return self.format_match(re.match(self.regex, arg), args)
 
-    def format_match(self, match: re.match) -> str:
-        return advanced_format(match, self.fmtstr)
+    def format_match(self, match: re.match, args=None) -> str:
+        return advanced_format(self.fmtstr, match, args)
+
+    # @classmethod
+    # def single_formatter(cls, formatter, token_string):
+    #     match = re.match(FORMAT_REGEX, formatter)
+    #     assert match
+    #
+    #     # magic: replaces the index with 0
+    #     formatter = formatter.replace(match.group(1), "group")
+    #     formatter = formatter.replace(match.group(2), "0")
+    #     formatter = cls("(.*)", formatter)
+    #     return formatter.format(token_string)
 
 
-def advanced_format(item: re.Match, fmtstr: ReplacerString) -> str:
+def advanced_format(fmtstr: ReplacerString, item: re.Match, subargs=None) -> str:
+    # Logging
+    print("item:   ", item)
+    print("fmtstr:  ", fmtstr)
+
+    subargs = {} if subargs is None else subargs
 
     if item is None:
         raise ValueError("Expected a match but got None.")
@@ -69,6 +87,9 @@ def advanced_format(item: re.Match, fmtstr: ReplacerString) -> str:
 
     for match in matches:
         origin = match.group(0)
+
+        k = match.group(1).strip()
+        lookup_closure = subargs[k] if k != "group" else item_groups
         target = _advanced_format_single(match, fmtstr, item_groups)
         # # Logging
         # print("match:   ", match)
