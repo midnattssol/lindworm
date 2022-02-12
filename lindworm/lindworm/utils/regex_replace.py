@@ -30,7 +30,8 @@ MISC_SHORTHANDS = {
     "st": str.strip,
     "tra": str.translate,
     "zfi": str.zfill,
-    "len": lambda s: str(len(s))
+    "len": lambda s: str(len(s)),
+    "??": lambda s, r: r if s else s,
 }
 
 SHORTHANDS = {**CASE_SHORTHANDS, **MISC_SHORTHANDS}
@@ -79,7 +80,9 @@ def advanced_format(fmtstr: ReplacerString, item: re.Match, subargs=None) -> str
     item_groups = {str(i): v for i, v in enumerate(item.groups())}
     item_groups |= item.groupdict()
 
-    matches = re.finditer(FORMAT_REGEX, fmtstr)
+    # does not account for double backslashing, but at least it allows escape sequences here
+    unescaped_fmtstr = fmtstr.replace(r"\}", "").replace(r"\{", "")
+    matches = re.finditer(FORMAT_REGEX, unescaped_fmtstr)
     matches = mit.unique_everseen(matches)
 
     mapping = {}

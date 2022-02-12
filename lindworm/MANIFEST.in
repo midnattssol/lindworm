@@ -1,2 +1,2 @@
-recursive-include sigurdlib/rules *
-recursive-include sigurdlib/templates *
+recursive-include lindworm/data/rules *
+recursive-include lindworm/data/templates *

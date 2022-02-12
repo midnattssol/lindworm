@@ -1,4 +1,4 @@
 operator_curry:
     regex: '(?<operator>contains|\\.\\.\\*\\*>|<\\*\\*\\.\\.|isnt|\\.\\.\\*>|\\.\\.\\*\\*|<\\*\\.\\.|\\|\\*\\*>|<\\*\\*\\||over|not|::\\*|\\.\\.>|\\.\\.\\*|<\\.\\.|\\|\\*>|<\\*\\||in|//|\\*\\*|is|<<|>>|<=|==|!=|>=|::|\\?\\?|\\.\\.|\\|>|<\\||\\+|/|\\&|\\^|\\~|\\||%|\\*|@|\\-|<|>|\\$)\\$'
-    formatter: 'OPERATORS[\'{ group:operator }\']'
+    formatter: 'lindworm.header.OPERATORS[\'{ group:operator }\']'
 

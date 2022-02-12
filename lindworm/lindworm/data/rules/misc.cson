@@ -21,13 +21,13 @@ unary_coalesce_none_par:
 iterator_slicer:
     # Matches $[...].
     regex: '\\$(?P<slice>\\[[^\\[\\]]*\\])'
-    formatter: 'lindworm.LindwormIteratorSlicer({token:-1}){group:slice}'
+    formatter: 'lindworm.header.LindwormIteratorSlicer({token:-1}){group:slice}'
 
 curry:
     # Matches $(...).
     # Hellish parenthesis matching
     regex: '\\$(?<inner>\\w*(?<balanced_parens>\\([^)(]*+(?:(?&balanced_parens)[^)(]*)*+\\)))'
-    formatter: 'lindworm.curry({token:-1}, *[{group:inner->[1:-1]}])'
+    formatter: 'lindworm.header.curry({token:-1}, *[{group:inner->[1:-1]}])'
 
 ternary:
     # C-style ternary expressions.

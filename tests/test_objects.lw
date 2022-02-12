@@ -1,0 +1,29 @@
+import numpy as np
+import frozendict
+
+
+def test_objects(unittester):
+    # Shorthand numpy array notation.
+    unittester.assertTrue(
+        np.all(
+            v[10, 20, 30] == np.array([10, 20, 30])
+        )
+    )
+
+    # Shorthand set notation.
+    unittester.assertEqual(
+        s{},
+        set()
+    )
+
+    # Shorthand frozen set notation.
+    unittester.assertEqual(
+        fs{1, 2, 3},
+        frozenset([1, 2, 3])
+    )
+
+    # Shorthand frozen dict notation.
+    unittester.assertEqual(
+        f{10: 20, 30: 40},
+        frozendict.frozendict({10: 20, 30: 40})
+    )

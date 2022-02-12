@@ -21,6 +21,10 @@ from .test_none import (
     test_none_coalesce,
     test_none_index
 )
+from .test_objects import (
+    # Regex 'test_function',
+    test_objects
+)
 from .test_pipe import (
     # Regex 'test_function',
     test_pipes

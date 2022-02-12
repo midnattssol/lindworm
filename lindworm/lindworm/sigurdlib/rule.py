@@ -6,7 +6,7 @@ import more_itertools as mit
 import regex as re
 
 from .constants import constants
-from utils import *
+from ..utils import *
 
 # FORMAT_REGEX = re.compile(r"\{([^{}:]*):(-?[^{}\-:]*)(?>->([^{}]*))?\}")
 

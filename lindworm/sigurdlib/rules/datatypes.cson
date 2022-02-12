@@ -1,5 +1,0 @@
-# Datatype shorthands
-datatype_vector:
-    # Matches v[] when the square brackets are balanced.
-    regex: 'v(?<inner>(?<balanced_sqb>\\[[^][]*+(?:(?&balanced_sqb)[^][]*)*+\\]))'
-    formatter: 'lindworm.numpy.array([{ group : inner -> [1:-1] }])'

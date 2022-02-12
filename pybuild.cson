@@ -6,16 +6,16 @@ regexes:
 
 tasks:
     mkinit:
-        "lindworm/header": [
+        "lindworm/lindworm/header": [
             'function'
             'class'
             'global'
         ]
 
-        "lindworm/sigurdlib": [
+        "lindworm/lindworm/sigurdlib": [
             "class"
         ]
-        "lindworm/utils": [
+        "lindworm/lindworm/utils": [
             'function'
             'class'
             'global'

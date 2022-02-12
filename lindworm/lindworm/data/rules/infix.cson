@@ -18,11 +18,11 @@ binary_chain_iterators:
 # Composition
 binary_compose_right:
     regex: '\\.\\.(?<stars>(?>\\w*\\*\\w*){0,2})>?'
-    formatter: 'lindworm.compose({token:-1}, {token:1}, True, { group:stars -> len })'
+    formatter: 'lindworm.header.compose({token:-1}, {token:1}, True, { group:stars -> len })'
 
 binary_compose_left:
     regex: '<(?<stars>(?>\\w*\\*\\w*){0,2})\\.\\.'
-    formatter: 'lindworm.compose({token:-1}, {token:1}, False, { group:stars -> len })'
+    formatter: 'lindworm.header.compose({token:-1}, {token:1}, False, { group:stars -> len })'
 
 # Piping
 binary_pipe_right:

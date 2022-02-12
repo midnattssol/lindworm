@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_namespace_packages
 import pathlib as p
 
 
@@ -10,16 +10,20 @@ setup(
     author='midnattssol',
     author_email='cd154a7e15@protonmail.com',
     license='BSD 2-clause',
-    packages=['sigurdlib', 'utils', 'builtins', 'header'],
+    packages=find_namespace_packages(include=['lindworm.*']),
     install_requires=[
         "numpy",
         "autopep8",
         "mako",
         "more_itertools",
-        "regex"
+        "regex",
+        "colorama",
+        "frozendict"
     ],
-    scripts=["bin/lindworm", "bin/sigurd"],
-    # scripts=["bin/sigurd"],
+    scripts=[
+        "bin/lindworm",
+        "bin/sigurd"
+    ],
     classifiers=[
         'Development Status :: 1 - Planning',
         'License :: OSI Approved :: BSD License',

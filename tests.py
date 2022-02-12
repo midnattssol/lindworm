@@ -19,7 +19,7 @@ def main():
     args = parser.parse_args()
 
     # Build tests.
-    subprocess.call(["sigurd", "--dir", "tests"])
+    subprocess.call(["sigurd", "--dir", "tests", "--force-recompile"])
     subprocess.call(["python", "pybuild/build.py", "pybuild.cson"], stdout=open("/dev/null", "w"))
 
     # Add tests.

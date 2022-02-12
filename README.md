@@ -25,7 +25,7 @@ A personal extension of Python inspired by Coconut.
 
 | Syntax            | Equivalent python syntax                  | Implemented |
 | :---------------- | :---------------------------------------- | :---------: |
-| `+$`, `*$`, `::$` | `op.add`, `op.mul`, `itertools.chain` ... |             |
+| `+$`, `*$`, `::$` | `op.add`, `op.mul`, `itertools.chain` ... |      ✓      |
 
 ## New functions and classes
 

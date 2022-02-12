@@ -1,0 +1,15 @@
+# Datatype shorthands
+datatype_vector:
+    # Matches v[] when the square brackets are balanced.
+    regex: 'v(?<inner>(?<balanced_sqb>\\[[^][]*+(?:(?&balanced_sqb)[^][]*)*+\\]))'
+    formatter: 'lindworm.header.numpy.array([{ group : inner -> [1:-1] }])'
+
+datatype_frozendict:
+    # Matches f{} when the curly brackets are balanced.
+    regex: 'f(?<inner>(?<balanced_curly>\\{[^}{]*+(?:(?&balanced_curly)[^}{]*)*+\\}))'
+    formatter: 'lindworm.header.frozendict.frozendict(\{{ group : inner -> [1:-1] }\})'
+
+datatype_frozenset:
+    # Matches fs{} when the curly brackets are balanced.
+    regex: '(?<frozen>f?)s(?<inner>(?<balanced_curly>\{[^}{]*+(?:(?&balanced_curly)[^}{]*)*+\}))'
+    formatter: '{ group: frozen -> ?? frozen }set([{ group : inner -> [1:-1] }])'

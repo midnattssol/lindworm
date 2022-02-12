@@ -18,7 +18,7 @@ import mako.template
 import more_itertools as mit
 import regex as re
 
-import utils
+from ..utils import *
 from .constants import constants
 from .dialect import PythonDialectTokenization
 from .rule import Rule, FORMAT_REGEX
@@ -44,8 +44,8 @@ BALANCED_TOKENS = {
 
 class LindwormTokenization(PythonDialectTokenization):
     """A tokenization of a file written in the Lindworm Python dialect."""
-    template_dir = PARENT_DIR / "templates"
-    rules_dir = PARENT_DIR / "rules"
+    template_dir = PARENT_DIR / "../data/templates"
+    rules_dir = PARENT_DIR / "../data/rules"
 
     def generate_metadata(self):
         origin_digest = hashlib.md5((self.source + __version__).encode("utf-8")).hexdigest()
@@ -199,7 +199,7 @@ class LindwormTokenization(PythonDialectTokenization):
 
         if direction == 1:
             token_items = enumerated[pointer:][::direction]
-            balancer = utils.reversed_dict(BALANCED_TOKENS.copy())
+            balancer = reversed_dict(BALANCED_TOKENS.copy())
         else:
             token_items = enumerated[:pointer][::direction]
             balancer = BALANCED_TOKENS.copy()
@@ -294,7 +294,7 @@ class LindwormTokenization(PythonDialectTokenization):
         # Group format: Use a named capture group.
         for token_submatch in bucket_items["group"]:
             token_submatch = token_submatch.group()
-            replacer = utils.Replacer(rule.regex, token_submatch)
+            replacer = Replacer(rule.regex, token_submatch)
             mapping[token_submatch] = replacer.format_match(match[1])
 
         # Token format: Get the nth token relative to this one.
@@ -335,7 +335,7 @@ class LindwormTokenization(PythonDialectTokenization):
                         temp = temp.replace(re.search(r"-?\d+", temp).group(), "0")
                         # MAGIC
 
-                        replacer = utils.Replacer("(.*)", temp)
+                        replacer = Replacer("(.*)", temp)
                         mapping[token_name] = replacer.format(matched_items_string)
 
                 # what does this do

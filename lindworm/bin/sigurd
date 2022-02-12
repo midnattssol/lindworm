@@ -5,21 +5,27 @@ import pathlib as p
 import sys
 import typing as t
 
-import sigurdlib
-import utils
+import lindworm
+import lindworm.sigurdlib
+import colorama
+
+
+def polite_error(error: str, *, code: int = 1):
+    print(f"{colorama.Fore.RED}Fatal: {error} {colorama.Style.RESET_ALL}")
+    exit(code)
 
 
 def compile2file(args: argparse.ArgumentParser):
     """Compiles Lindworm code using Sigurd."""
     sys.stdout = open(args.logger, "w")
 
-    compiler = sigurdlib.LindwormTokenization.from_path(args.origin)
+    compiler = lindworm.sigurdlib.LindwormTokenization.from_path(args.origin)
     needs_compiling = True
 
     if args.target is not None and args.target.exists():
 
         if args.overwrite_mode == "N":
-            utils.polite_error(f"Cannot overwrite file '{args.target}' (see --help overwrite)")
+            polite_error(f"Cannot overwrite file '{args.target}' (see --help overwrite)")
 
         metadata_old = compiler.parse_file_metadata(args.target)
         metadata_new = compiler.generate_metadata()
@@ -27,7 +33,7 @@ def compile2file(args: argparse.ArgumentParser):
         if (metadata_old is None or metadata_old.get("dialect") != "lindworm"):
             # The file was not a valid Lindworm file.
             if args.overwrite_mode == "L":
-                utils.polite_error(f"Cannot overwrite non-Lindworm file '{args.target}' (see --help overwrite)")
+                polite_error(f"Cannot overwrite non-Lindworm file '{args.target}' (see --help overwrite)")
 
         if not args.force_recompile:
             needs_compiling &= metadata_new["uid"] != metadata_old["uid"]
@@ -80,7 +86,7 @@ def main() -> t.NoReturn:
     for key, value in valid.items():
         if getattr(args, key) not in value:
             formatted_option = (key[0] if isinstance(key, list) and len(key) == 1 else key)
-            utils.polite_error(
+            polite_error(
                 f"'{formatted_option}' is not a valid option for '--{key}' (valid options are {', '.join(value)})"
             )
 
@@ -91,7 +97,7 @@ def main() -> t.NoReturn:
         args.target = args.origin if args.target is None else args.target
 
         for item in filter(lambda x: not x.is_dir(), (args.target, args.origin)):
-            utils.polite_error(f"Path {item} is not a valid directory.")
+            polite_error(f"Path {item} is not a valid directory.")
 
         # Find the new mappings.
         mappings = {path: str(path).removesuffix(".lw") + ".py" for path in args.origin.iterdir() if path.suffix == ".lw"}
