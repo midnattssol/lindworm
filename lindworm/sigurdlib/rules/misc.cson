@@ -2,6 +2,7 @@ lambda:
     regex: '->|λ'
     formatter: '(lambda _=None: {token:1->st})'
 
+# Mixed unary None-coalescing operators.
 unary_coalesce_none_dot:
     # Matches a?.attribute.
     regex: "\\?(?<inner>\\.[\\w_][\\w\\d_]*)"
@@ -27,41 +28,6 @@ curry:
     # Hellish parenthesis matching
     regex: '\\$(?<inner>\\w*(?<balanced_parens>\\([^)(]*+(?:(?&balanced_parens)[^)(]*)*+\\)))'
     formatter: 'lindworm.curry({token:-1}, *[{group:inner->[1:-1]}])'
-
-
-# Augmented EQ
-none_coalescing_eq:
-    regex: '(\\?\\?=)'
-    formatter: '{token:-1} = ({token:-1} if {token:-1} is not None else {token:1})'
-
-
-# 2-ary operators
-binary_coalesce_none:
-    regex: '(\\?\\?)'
-    formatter: '({token:-1} if {token:-1} is not None else {token:1})'
-
-binary_compose_right:
-    regex: '\\.\\.(?<stars>(?>\\w*\\*\\w*)*)>?'
-    formatter: 'lindworm.compose({token:-1}, {token:1}, True, { group:stars -> len })'
-
-binary_compose_left:
-    regex: '<(?<stars>(?>\\w*\\*\\w*)*)\\.\\.'
-    formatter: 'lindworm.compose({token:-1}, {token:1}, False, { group:stars -> len })'
-
-binary_pipe_right:
-    regex: '\\|(?<stars>(?>\\w*\\*\\w*)*)>'
-    formatter: '({token:1}({group:stars}{token:-1}))'
-
-binary_pipe_left:
-    regex: '<(?<stars>(?>\\w*\\*\\w*)*)\\|'
-    formatter: '({token:-1}({group:stars}{token:1}))'
-
-
-# Datatype shorthands
-datatype_vector:
-    # Matches v[] when the square brackets are balanced.
-    regex: 'v(?<inner>(?<balanced_sqb>\\[[^][]*+(?:(?&balanced_sqb)[^][]*)*+\\]))'
-    formatter: 'lindworm.numpy.array([{ group : inner -> [1:-1] }])'
 
 ternary:
     # C-style ternary expressions.

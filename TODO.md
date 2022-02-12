@@ -5,7 +5,8 @@
 [   ] Nested lambdas don't work
 [   ] Balanced brackets for nested lambdas: add second rule
 [   ] Multiline comments with ###
-[   ] On, Yes, Off, No, unless, contains, over
+[===] (On, Yes, Off, No, done: over, contains, unless, isnt)
+[   ] Result
 
 item = Err("hello world")
 a = (unwrap expensive()) + 10

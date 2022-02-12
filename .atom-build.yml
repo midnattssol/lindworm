@@ -3,3 +3,4 @@ sh: true
 
 errorMatch:
   - "[Ee](rror|xception)"
+  - "FAILURE"

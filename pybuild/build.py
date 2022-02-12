@@ -8,7 +8,9 @@ import cson
 import more_itertools as mit
 import regex as re
 
+
 HASHBANG = "#!/usr/bin/env python3.10\n"
+IMPORT_REGEX = re.compile(r"from\s+\.\S+\s+import((\s*\([^)]*\))|(.*$))\n", re.M)
 
 
 def submodules_in_folder(folder: p.Path):
@@ -20,49 +22,71 @@ def submodules_in_folder(folder: p.Path):
     yield from sorted(examples)
 
 
-def import_matching(folder, regexes):
+def build_folder_init(folder: p.Path, regexes):
     buffer = HASHBANG
+    target = folder / "__init__.py"
+    right_buffer = ""
 
+    # Removes all local imports from the file.
+    if target.exists():
+        with open(target, "r") as file:
+            right_buffer = file.read().removeprefix(HASHBANG)
+        while match := re.search(IMPORT_REGEX, right_buffer):
+            right_buffer = right_buffer.replace(match.group(), "")
+        right_buffer = "\n" + right_buffer.strip() + "\n"
+
+    # Finds all local files to import from.
     for filename in submodules_in_folder(folder):
         with open(filename) as file_:
             contents = file_.read()
-            item = [re.findall(x, contents, re.M) for x in regexes]
-            item = map(sorted, item)
+            item = [[f"# Regex '{name}'", *sorted(re.findall(regex, contents, re.M))] for name, regex in regexes.items()]
+            item = filter(lambda i: len(i) != 1, item)
             item = mit.flatten(item)
             item = list(item)
             if not item:
                 continue
-            item = ("(\n    " + ",\n    ".join(item) + "\n)") if len(item) > 1 else mit.first(item, "")
+            item = "(\n    " + ",\n    ".join(item) + "\n)"
             string = f"from .{filename.stem.split('.', 1)[0]} import {item}\n"
         buffer += string
 
     with open(folder / "__init__.py", "w") as file:
-        file.write(buffer)
+        contents = buffer + right_buffer
+        file.write(contents.rstrip() + "\n")
 
 
-def from_file(filename):
-    print(f"Building from file '{filename}'.")
+def from_file(filename: p.Path) -> None:
+    print(f"Building Python imports from file '{filename}'.")
 
     with open(filename, "r", encoding="utf-8") as file:
         contents = cson.load(file)
 
     tasks = contents["tasks"]
+    exit_code = 0
 
     for folder, regex_names in tasks.get("mkinit", {}).items():
         folder = p.Path(folder)
-        regexes = list(map(contents["regexes"].get, regex_names))
+        regexes = dict(zip(regex_names, map(contents["regexes"].get, regex_names)))
+
         print(f"Building '{folder / '__init__.py'}' with {len(regexes)} regexes...", end="")
-        assert folder.exists()
+
+        if not folder.exists():
+            print(" ERROR: the folder does not exist. skipping.")
+            exit_code |= 1
+
         assert None not in regexes
-        import_matching(folder, regexes)
+
+        build_folder_init(folder, regexes)
         print(" done!")
+
+    return exit_code
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description='Automatically generate __init__.py files.')
     parser.add_argument('path', metavar='P', type=p.Path, help='path to load build instructions from')
     args = parser.parse_args()
-    from_file(args.path)
+    exit_code = from_file(args.path)
+    exit(exit_code)
 
 
 if __name__ == '__main__':

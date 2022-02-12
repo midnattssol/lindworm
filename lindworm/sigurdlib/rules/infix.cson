@@ -1,0 +1,34 @@
+# Binary infix operators.
+binary_over:
+    regex: '(over)'
+    formatter: 'map({token:-1}, {token:1})'
+
+binary_contains:
+    regex: '(contains)'
+    formatter: '({token:1} in {token:-1})'
+
+binary_coalesce_none:
+    regex: '(\\?\\?)'
+    formatter: '({token:-1} if {token:-1} is not None else {token:1})'
+
+binary_chain_iterators:
+    regex: '(::(?<stars>(?>\\w*\\*\\w*){0,1}))'
+    formatter: 'chain({token:-1}, {group:stars}{token:1})'
+
+# Composition
+binary_compose_right:
+    regex: '\\.\\.(?<stars>(?>\\w*\\*\\w*){0,2})>?'
+    formatter: 'lindworm.compose({token:-1}, {token:1}, True, { group:stars -> len })'
+
+binary_compose_left:
+    regex: '<(?<stars>(?>\\w*\\*\\w*){0,2})\\.\\.'
+    formatter: 'lindworm.compose({token:-1}, {token:1}, False, { group:stars -> len })'
+
+# Piping
+binary_pipe_right:
+    regex: '\\|(?<stars>(?>\\w*\\*\\w*){0,2})>'
+    formatter: '({token:1}({group:stars}{token:-1}))'
+
+binary_pipe_left:
+    regex: '<(?<stars>(?>\\w*\\*\\w*){0,2})\\|'
+    formatter: '({token:-1}({group:stars}{token:1}))'

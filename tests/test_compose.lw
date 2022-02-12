@@ -10,8 +10,8 @@ def test_compose(unittester):
 #
 #     for _ in range(10):
 #         a, b = random.randint(0, 1024), random.randint(0, 1024)
-#         with self.subTest(a=a, b=b):
-#             self.assertEqual(
+#         with unittester.subTest(a=a, b=b):
+#             unittester.assertEqual(
 #                 sum_times_two(a, b),
 #                 sum_times_two_py(a, b),
 #             )

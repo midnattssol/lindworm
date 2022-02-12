@@ -1,0 +1,9 @@
+# Describes the order of the rules.
+[
+    "shorthands",
+    "datatypes",
+    "infix_assign",
+    "infix_curry",
+    "infix",
+    "misc"
+]

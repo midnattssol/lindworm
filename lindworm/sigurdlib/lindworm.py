@@ -44,8 +44,8 @@ BALANCED_TOKENS = {
 
 class LindwormTokenization(PythonDialectTokenization):
     """A tokenization of a file written in the Lindworm Python dialect."""
-    default_template_path = PARENT_DIR / "base/lindworm.py.mako"
-    rules_path = PARENT_DIR / "base/rules.cson"
+    template_dir = PARENT_DIR / "templates"
+    rules_dir = PARENT_DIR / "rules"
 
     def generate_metadata(self):
         origin_digest = hashlib.md5((self.source + __version__).encode("utf-8")).hexdigest()
@@ -76,7 +76,7 @@ class LindwormTokenization(PythonDialectTokenization):
         self.logger.write(f"INFO | Compiling self.\n")
         metadata = self.generate_metadata()
         self.compile_tokens()
-        template = load_template(self.default_template_path)
+        template = load_template(self.template_dir / "default.py.mako")
 
         metadata_lines = cson.dumps(metadata, indent=4).splitlines()
         metadata_lines.insert(0, METADATA_BEGIN)

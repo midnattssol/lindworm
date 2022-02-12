@@ -2,17 +2,16 @@ regexes:
     function: '^def\\s+([^_][^\\s)()]+)'
     class: '^class\\s+([^_][^\\s)(:]+)'
     global: '^([A-Z][A-Z_0-9]+)\\s*='
-    numpy: "numpy"
     test_function: '^def\\s+(test_[^\\s)()]+)'
 
 tasks:
     mkinit:
-        "lindworm/lindworm": [
+        "lindworm/header": [
             'function'
             'class'
             'global'
-            'numpy'
         ]
+
         "lindworm/sigurdlib": [
             "class"
         ]

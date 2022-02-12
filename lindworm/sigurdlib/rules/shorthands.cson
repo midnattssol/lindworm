@@ -1,0 +1,16 @@
+# Shorthands which don't capture any nearby groups.
+shorthand_unless:
+    regex: '\\b(unless)\\b'
+    formatter: 'if not'
+
+shorthand_isnt:
+    regex: '\\b(isnt)\\b'
+    formatter: 'is not'
+
+shorthand_false_alternatives:
+    regex: '\\b(Off|No)\\b'
+    formatter: 'False'
+
+shorthand_true_alternatives:
+    regex: '\\b(On|Yes)\\b'
+    formatter: 'True'

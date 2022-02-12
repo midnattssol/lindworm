@@ -1,0 +1,3 @@
+new_infix:
+    - "add infix to lindworm/sigurdlib/rules/infix.cson"
+    - "add infix to lindworm/header/lindworm_ops.py"

@@ -1,25 +1,29 @@
 import operator as op
 
-
-greeting = None
-greeter = -> print(f"So I just wanted to say, {_}")
+# Shorthand lambdas.
+greeter = -> print("So I just wanted to say" + _)
 
 # None coalescing.
+greeting = None
 greeter(greeting)
 greeter(greeting ?? "Hello world!")
 
-# Shorthand composition.
+# Function composition.
 maplist = map ..> list
 
 # Shorthand lambdas.
 hi = 5
-print(maplist(-> (_ + 10 + hi + 30), range(10)))
-print(maplist(λ (_ + 10), range(10)))
 print(maplist(-> _ + 2, range(2)))
 
-# Currying
-a = op.add$(10)(20)
-print(a)
-
-add_ten_and_print = ((op.add$(10)) ..> print)
+# Function currying
+ten_adder = op.add$(20)
+add_ten_and_print = (ten_adder ..> print)
 add_ten_and_print(13)
+
+# Operator currying
+multiply = *$
+print(multiply(10, 20))
+print(10 * 20)
+
+
+print(reduce([10, 20, 30], *$, 1))

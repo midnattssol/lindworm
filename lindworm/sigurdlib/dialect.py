@@ -42,9 +42,34 @@ class PythonDialectTokenization():
 
     @classmethod
     def load_rules(cls) -> list:
-        with open(cls.rules_path) as file:
-            items = cson.load(file)
-            rules = [Rule(k, **v, priority=constants.priority_of(constants.LPAR) - i) for i, (k, v) in enumerate(items.items())]
+        subitems = {}
+        order = None
+
+        for filename in cls.rules_dir.iterdir():
+            if filename.suffix != ".cson":
+                raise ValueError(f"Unexpected file '{filename}' in rules directory '{cls.rules_dir}' (expected extension '.cson'.)")
+
+            if filename.stem == "__order__":
+                with open(filename) as file:
+                    order = cson.load(file)
+                continue
+
+            with open(filename) as file:
+                subitems[filename.stem] = cson.load(file)
+
+        # Finds all rules.
+        rules = []
+        for file_stem in order:
+            item = subitems[file_stem]
+            rules += [
+                Rule(
+                    k,
+                    **v,
+                    priority=constants.priority_of(constants.LPAR)  # -i
+                )
+                for k, v in item.items()
+            ]
+
         return rules
 
     def rebuild_source(self, indent=0):

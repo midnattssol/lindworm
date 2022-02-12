@@ -1,1 +1,2 @@
-recursive-include sigurdlib/base *
+recursive-include sigurdlib/rules *
+recursive-include sigurdlib/templates *

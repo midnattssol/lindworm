@@ -144,7 +144,11 @@ class constants:
 
     @classmethod
     def from_tokenize(cls, i: int) -> int:
-        return getattr(cls, tokenize.tok_name[i])
+        name = tokenize.tok_name[i]
+        rename = {
+            "NL": "NEWLINE"
+        }
+        return getattr(cls, rename.get(name, name))
 
     @classmethod
     def priority_of(cls, i: int) -> int:

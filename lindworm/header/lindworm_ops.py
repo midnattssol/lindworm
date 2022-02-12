@@ -1,0 +1,55 @@
+import operator as op
+from .functions import *
+
+OPERATORS = {
+    "+": op.add,
+    "in": op.contains,
+    "/": op.truediv,
+    "//": op.floordiv,
+    "&": op.and_,
+    "^": op.xor,
+    "~": op.invert,
+    "|": op.or_,
+    "**": op.pow,
+    "is": op.is_,
+    "<<": op.lshift,
+    "%": op.mod,
+    "*": op.mul,
+    "@": op.matmul,
+    "not": op.not_,
+    ">>": op.rshift,
+    "-": op.sub,
+    "<": op.lt,
+    "<=": op.le,
+    "==": op.eq,
+    "!=": op.ne,
+    ">=": op.ge,
+    ">": op.gt,
+}
+
+
+# New operators
+OPERATORS |= {
+    "isnt": op.is_not,
+    "::": it.chain,
+    "::*": lambda a, b: it.chain(a, *b),
+    "??": lambda a, b: a if a is not None else b,
+    "..>": lambda f, g: compose(f, g, False, 0),
+    "..*>": lambda f, g: compose(f, g, False, 1),
+    "..**>": lambda f, g: compose(f, g, False, 2),
+    "..": lambda f, g: compose(f, g, False, 0),
+    "..*": lambda f, g: compose(f, g, False, 1),
+    "..**": lambda f, g: compose(f, g, False, 2),
+    "<..": lambda f, g: compose(f, g, True, 0),
+    "<*..": lambda f, g: compose(f, g, True, 1),
+    "<**..": lambda f, g: compose(f, g, True, 2),
+    "$": curry,
+    "|>": lambda a, b: b(a),
+    "|*>": lambda a, b: b(*a),
+    "|**>": lambda a, b: b(**a),
+    "<|": lambda a, b: a(b),
+    "<*|": lambda a, b: a(*b),
+    "<**|": lambda a, b: a(**b),
+    "over": map,
+    "contains": lambda a, b: b in a
+}

@@ -10,7 +10,7 @@ setup(
     author='midnattssol',
     author_email='cd154a7e15@protonmail.com',
     license='BSD 2-clause',
-    packages=['lindworm', 'sigurdlib', 'utils'],
+    packages=['sigurdlib', 'utils', 'builtins', 'header'],
     install_requires=[
         "numpy",
         "autopep8",
