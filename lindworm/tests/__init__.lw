@@ -1,8 +1,7 @@
 #!/usr/bin/env python3.10
-from .test_curry import test_curry  # Regex 'test_function',
-from .test_lambda import test_lambda  # Regex 'test_function',
-from .test_misc_infix import (test_iterator_chain,  # Regex 'test_function',
+from .test_curry import test_curry
+from .test_lambda import test_lambda
+from .test_misc_infix import (test_increment_decrement, test_iterator_chain,
                               test_keywords)
-from .test_none import (test_none_call,  # Regex 'test_function',
-                        test_none_coalesce, test_none_index)
-from .test_objects import test_objects  # Regex 'test_function',
+from .test_none import test_none_call, test_none_coalesce, test_none_index
+from .test_objects import test_objects

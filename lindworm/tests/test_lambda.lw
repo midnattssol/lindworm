@@ -1,7 +1,7 @@
 
 def test_lambda(unittester):
-    lambda_0 = -> _ + 3
-    lambda_1 = -> 3
+    lambda_0 = => _ + 3
+    lambda_1 = => 3
 
     unittester.assertEqual(lambda_0(5), 8)
 
@@ -10,12 +10,12 @@ def test_lambda(unittester):
     unittester.assertEqual(lambda_1(), 3)
 
     # Explicit lambdas
-    lambda_add = (a, b) -> a + b
+    lambda_add = (a, b) => a + b
     unittester.assertEqual(lambda_add(11, 12), 23)
 
-    lambda_star = (*args) -> sum(args)
+    lambda_star = (*args) => sum(args)
     unittester.assertEqual(lambda_star(1, 2, 3, 4), 10)
 
-    lambda_scaled = (n0, n1=1) -> n0 * n1
+    lambda_scaled = (n0, n1=1) => n0 * n1
     unittester.assertEqual(lambda_scaled(13), 13)
     unittester.assertEqual(lambda_scaled(14, 9), 126)

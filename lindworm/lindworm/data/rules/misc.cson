@@ -1,9 +1,9 @@
 lambda_explicit:
-    regex: "(?<inner>(?<balanced_parens>\\([^)(]*+(?:(?&balanced_parens)[^)(]*)*+\\)))\\s*(->|\u03bb)"
+    regex: "(?<inner>(?<balanced_parens>\\([^)(]*+(?:(?&balanced_parens)[^)(]*)*+\\)))\\s*(=>|\u03bb)"
     formatter: '(lambda { group:inner -> [1:-1] }: { token:1 -> st })'
 
 lambda_implicit:
-    regex: '->|λ'
+    regex: '=>|\u03bb'
     formatter: '(lambda _=None: {token:1->st})'
 
 # Mixed unary None-coalescing operators.

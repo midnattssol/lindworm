@@ -13,7 +13,7 @@ Lindworm is on PyPi, and can be installed with pip from the command line with th
 Lindworm comes with several new operators, as well as ways to combine them. , so it can be easily switched between. It has a high compilation speed and remains both short and relatively readable after compilation. For example:
 
     # Lindworm
-    factorial = -> range(1, _) |> fold_left$(*$)
+    factorial = => range(1, _) |> fold_left$(*$)
     print(factorial(5))
 
 Compiles into this:
@@ -40,7 +40,7 @@ Compiles into this:
 | `f <\| a`           | `backwards pipe`          | `b(a)`                                                         | 2         | Yes (goal: No)       |      ✓      |
 | `a :: b`            | `chain`                   | `itertools.chain(a, b)`                                        | 1         | No                   |      ✓      |
 | `a ::: b`           | `always-iterable chain`   | `itertools.chain(map(more_itertools.always_iterable, [a, b]))` | 0         | No                   |      ✓      |
-| `->`, `λ`           | `lambda`                  | `lambda _=None: (expression)`                                  | 0         | Yes (goal: No)       |      ✓      |
+| `=>`, `λ`           | `lambda`                  | `lambda _=None: (expression)`                                  | 0         | Yes (goal: No)       |      ✓      |
 | `a ?? b`            | `None-coalesce`           | `a if a is not None else b`                                    | 0         | No                   |      ✓      |
 | `a?[b]`             | `None-coalesce index`     | `a[b] if a is not None else None`                              | 0         | Yes (goal: No)       |      ✓      |
 | `a?.b`              | `None-coalesce attribute` | `a.b if a is not None else None`                               | 0         | Yes (goal: No)       |      ✓      |

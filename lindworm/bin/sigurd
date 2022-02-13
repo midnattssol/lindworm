@@ -28,19 +28,21 @@ def tempfile():
 
 
 def polite_error(error: str, *, code: int = 1):
+    sys.stdout = sys.__stdout__
     print(f"{colorama.Fore.RED}Fatal: {error} {colorama.Style.RESET_ALL}")
     exit(code)
 
 
 def compile2file(args: argparse.ArgumentParser):
     """Compiles Lindworm code using Sigurd."""
-    sys.stdout = open(args.logger, "w")
 
+    # HACK: stdout hacking
+    sys.stdout = open(args.logger, "w")
     compiler = lindworm.sigurdlib.LindwormTokenization.from_path(args.origin)
+
     needs_compiling = True
 
     if args.output is not None and args.output.exists():
-
         if args.overwrite_mode == "N":
             polite_error(f"Cannot overwrite file '{args.output}' (see --help overwrite)")
 
