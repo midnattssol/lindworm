@@ -33,6 +33,13 @@ Compiles into this:
 
 ## Features
 
+### Starrability
+
+Starrable operators can have up to two stars placed inside of them to use Python's iterator and dictionary unpackings. For example:
+
+    [10, 20, 30] |*> print  # Equivalent to print(*[10, 20, 30])
+    [11, 12] |*> +$
+
 ### New operators
 
 | Operator            | Name                      | Equivalent python syntax                                       | Max stars | Requires parentheses | Implemented |
@@ -64,7 +71,7 @@ Compiles into this:
 The new built-ins are currently `chain`, `combinations`, `count`, `groupby`, `permutations`, `product`, `adjacent`, `always_iterable,
 always_reversible`, `bucket`, `circular_shifts`, `collapse`, `combination_index`, `consume`, `consumer`, `convolve,
 countable`, `distinct_combinations`, `distinct_permutations`, `duplicates_everseen,
-duplicates_justseen`, `first_true`, `flatten`, `ilen`, `is_sorted`, `iter_except`, `iterate`, `locate`, `lstrip,
+duplicates_justseen`, `first_true`, `flatten`, `fold_left`, `fold_right`, `ilen`, `is_sorted`, `iter_except`, `iterate`, `locate`, `lstrip,
 minmax`, `nth_combination`, `nth_or_last`, `nth_permutation`, `nth_product`, `numeric_range,
 partitions`, `permutation_index`, `powerset`, `product_index`, `repeat_last`, `replace`, `rlocate,
 rstrip`, `set_partitions`, `sliding_window`, `split_after`, `split_at`, `split_before`, `split_into,
@@ -72,16 +79,7 @@ split_when`, `spy`, `strip`, `unique_everseen`, `unique_in_window`, `unique_just
 
 Most of them come from `more_itertools`, `itertools`, and similar libraries. This is not a stable list though!
 
-| Syntax           | Equivalent python syntax                              | Implemented | Notes                                   |
-| :--------------- | :---------------------------------------------------- | :---------: | :-------------------------------------- |
-| `foldr(f, a, b)` | `lambda f, a, b: functools.reduce(f, a, b)`           |      ✓      |                                         |
-| `foldl(f, a, b)` | `lambda f, a, b: functools.reduce(f, reversed(a), b)` |      ✓      |                                         |
-| `foldl(f, a, b)` | `lambda f, a, b: functools.reduce(f, reversed(a), b)` |      ✓      |                                         |
-| `Result`         |                                                       |      ✓      | Like Rust's `Result`.                   |
-| `Ok`             |                                                       |      ✓      | Like Rust's `Ok`. Subclasses `Result`.  |
-| `Err`            |                                                       |      ✓      | Like Rust's `Err`. Subclasses `Result`. |
-
-### Objects
+### Aliases
 
 | Syntax      | Name         | Equivalent python syntax | Implemented |
 | :---------- | :----------- | :----------------------- | :---------: |
@@ -92,6 +90,15 @@ Most of them come from `more_itertools`, `itertools`, and similar libraries. Thi
 | `On`, `Yes` | `On`, `Yes`  | `True`                   |      ✓      |
 | `Off`, `No` | `Off`, `No`  | `False`                  |      ✓      |
 
+### New classes
+
+| Syntax           | Equivalent python syntax                              | Implemented | Notes                                   |
+| :--------------- | :---------------------------------------------------- | :---------: | :-------------------------------------- |
+| `Result`         |                                                       |      ✓      | Like Rust's `Result`.                   |
+| `Ok`             |                                                       |      ✓      | Like Rust's `Ok`. Subclasses `Result`.  |
+| `Err`            |                                                       |      ✓      | Like Rust's `Err`. Subclasses `Result`. |
+
+
 ### Control flow
 
 | Syntax      | Name     | Equivalent python syntax | Implemented |
@@ -99,6 +106,7 @@ Most of them come from `more_itertools`, `itertools`, and similar libraries. Thi
 | `unless b:` | `unless` | `if not b:`              |      ✓      |
 | `unwrap a`  | `unwrap` |                          |             |
 
+<<<<<<< HEAD
 #### Starrability
 
 Starrable operators can have up to two stars placed inside of them to use Python's iterator and dictionary unpackings. For example:
@@ -110,3 +118,5 @@ Starrable operators can have up to two stars placed inside of them to use Python
 
 - [Atom language highlighting for Lindworm](https://github.com/midnattssol/atom-language-lindworm)
 - [Coconut](https://github.com/evhub/coconut)
+=======
+>>>>>>> c51cf46246acbe3cb97160eae08fdf3f44d003e0
