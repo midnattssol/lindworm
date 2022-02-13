@@ -1,28 +1,29 @@
 #!/usr/bin/env python3.10
 """Compiles and runs all tests in the `tests` directory."""
-import contextlib as ctx
-
+import argparse
+import pathlib as p
 import subprocess
 import unittest
-import argparse
+
 import lindworm
-import pathlib as p
 
 
 class LindwormTester(unittest.TestCase):
+    """Runs the test suite for Lindworm."""
+
     ...
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Compile Lindworm code to Python.')
+    parser = argparse.ArgumentParser(description='Run Lindworm tests.')
     parser.add_argument('--tests', dest='tests', nargs="+", help='run the following tests (default: all)')
     args = parser.parse_args()
 
-    # Build tests.
-    subprocess.call(["sigurd", "--dir", "tests", "--force-recompile"])
-    subprocess.call(["python", "pybuild/build.py", "pybuild.cson"], stdout=open("/dev/null", "w"))
+    def _relative_to_file_(path):
+        return str(p.Path(__file__).parent / path)
 
-    # Add tests.
+    # Build and add tests.
+    subprocess.call(["sigurd", "--dir", _relative_to_file_("tests"), "--force-recompile"])
     import tests
 
     for name in dir(tests):
@@ -33,7 +34,7 @@ def main():
         ):
             setattr(LindwormTester, name, item)
 
-    unittest.main(verbosity=2)
+    unittest.main(verbosity=4)
 
 
 if __name__ == '__main__':

@@ -1,19 +1,19 @@
-import sys
-import cson
 import dataclasses as dc
+import datetime as dt
 import io
 import itertools as it
 import pathlib as p
-import typing as t
+import sys
 import tokenize
-import datetime as dt
+import typing as t
 
+import cson
 import mako
 import mako.template
 
 from .constants import constants
-from .token import SimpleToken
 from .rule import Rule
+from .token import SimpleToken
 
 
 @dc.dataclass

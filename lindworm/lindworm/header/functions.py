@@ -1,7 +1,6 @@
 """Header functions for Lindworm."""
-import typing as t
 import itertools as it
-
+import typing as t
 
 _IOTA = 0
 

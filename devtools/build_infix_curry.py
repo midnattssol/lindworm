@@ -1,16 +1,22 @@
 #!/usr/bin/env python3.10
 """Builds infix operators."""
+import string
+
 import cson
 import lindworm.header
 import regex as re
 
 
-OPERATOR_REGEX = "|".join(
-    map(
-        re.escape,
-        sorted(lindworm.header.OPERATORS.keys(), key=len, reverse=True),
-    ))
+def regexified(items):
+    s = "|".join(
+        map(
+            re.escape,
+            sorted(items, key=len, reverse=True),
+        ))
+    return s
 
+
+OPERATOR_REGEX = regexified(lindworm.header.OPERATORS)
 OPERATOR_CURRY_REGEX = f"(?<operator>{OPERATOR_REGEX})\\$"
 
 

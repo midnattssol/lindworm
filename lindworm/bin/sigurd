@@ -2,12 +2,28 @@
 """Command-line utility for compiling Lindworm code."""
 import argparse
 import pathlib as p
+import py_compile
 import sys
 import typing as t
 
+import colorama
 import lindworm
 import lindworm.sigurdlib
-import colorama
+
+
+def tempfile():
+    """Gets a temporary unused filename."""
+    base_path = p.Path("/tmp/")
+    filename = None
+    i = 0
+
+    while True:
+        i += 1
+        filename = base_path / f"tempfile_{i}"
+        if not filename.exists():
+            break
+
+    return filename
 
 
 def polite_error(error: str, *, code: int = 1):
@@ -22,52 +38,59 @@ def compile2file(args: argparse.ArgumentParser):
     compiler = lindworm.sigurdlib.LindwormTokenization.from_path(args.origin)
     needs_compiling = True
 
-    if args.target is not None and args.target.exists():
+    if args.output is not None and args.output.exists():
 
         if args.overwrite_mode == "N":
-            polite_error(f"Cannot overwrite file '{args.target}' (see --help overwrite)")
+            polite_error(f"Cannot overwrite file '{args.output}' (see --help overwrite)")
 
-        metadata_old = compiler.parse_file_metadata(args.target)
+        metadata_old = compiler.parse_file_metadata(args.output)
         metadata_new = compiler.generate_metadata()
 
         if (metadata_old is None or metadata_old.get("dialect") != "lindworm"):
             # The file was not a valid Lindworm file.
             if args.overwrite_mode == "L":
-                polite_error(f"Cannot overwrite non-Lindworm file '{args.target}' (see --help overwrite)")
+                polite_error(f"Cannot overwrite non-Lindworm file '{args.output}' (see --help overwrite)")
 
         if not args.force_recompile:
             needs_compiling &= metadata_new["uid"] != metadata_old["uid"]
 
     if needs_compiling:
-        print(f"Compiling '{args.origin}' -> '{args.target}'.")
-        result = compiler.to_python(beautifier=args.beautifier[0])
+        print(f"Compiling '{args.origin}'.")
+        result = compiler.to_python(beautifier=args.beautifier)
 
-        # Print to stdout if there is no target, otherwise write it to the file.
-        if args.target is None:
+        # Print to stdout if there is no output, otherwise write it to the file.
+        if args.output is None:
             sys.stdout = sys.__stdout__
             print(result)
             return
 
-        with open(args.target, "w") as file:
+        with open(args.output, "w") as file:
             file.write(result)
 
+        if not args.bytecode_mode:
+            return
+
+        py_compile.compile(args.output)
+        args.output.unlink()
         return
 
     else:
-        print(f"Didn't compile '{args.origin}' -> '{args.target}' (hash remained the same).")
+        print(f"Didn't compile '{args.origin}' -> '{args.output}' (hash remained the same).")
 
 
 def main() -> t.NoReturn:
     parser = argparse.ArgumentParser(description='Compile Lindworm code to Python.')
     parser.add_argument('origin', metavar='FILE', type=p.Path, help='origin file')
     parser.add_argument('--beautifier', metavar='B', dest='beautifier', type=str, help='use the chosen beautifier on the input (default: none)')
-    parser.add_argument('--target', metavar='FILE', dest='target', type=p.Path, help='choose target file for compilation (default: stdout)')
+    parser.add_argument('--output', metavar='FILE', dest='output', type=p.Path, help='choose output file for compilation (default: stdout)')
     parser.add_argument('--logger', metavar='FILE', dest='logger', type=p.Path, help='(dev) choose logfile location (default: none)')
     parser.add_argument('--dirmode', dest='directory_mode',  action="store_const", const=True,
-                        default=False, help="compile all files in directory to .py files")
+                        default=False, help="compile all .lw files in the directory (default: false)")
+    parser.add_argument('--bytecode', dest='bytecode_mode',  action="store_const", const=True,
+                        default=False, help="compile files to bytecode instead of Python code (default: false)")
     parser.add_argument(
         '--overwrite', dest='overwrite_mode', type=str,
-        help="overwrite mode - valid options are [A]lways, [N]ever, and [L]indworm (default). lindworm only overwrites lindworm files."
+        help="overwrite mode. valid options are [A]lways overwrite, [N]ever overwrite, and only overwrite [L]indworm files. (default: L)"
     )
     parser.add_argument('--force-recompile', dest='force_recompile',  action="store_const", const=True, default=False,
                         help='force recompilation even if the hash is the same (default: false)')
@@ -79,7 +102,7 @@ def main() -> t.NoReturn:
     args.overwrite_mode = args.overwrite_mode if args.overwrite_mode is not None else "L"
 
     valid = {
-        "beautifier": ["none", "autopep8"],
+        "beautifier": ["none", "autopep8", "black"],
         "overwrite_mode": "ANL",
     }
 
@@ -90,22 +113,25 @@ def main() -> t.NoReturn:
                 f"'{formatted_option}' is not a valid option for '--{key}' (valid options are {', '.join(value)})"
             )
 
+    if args.bytecode_mode and args.output:
+        polite_error("the --bytecode and --output options are mutually exclusive.")
+
     if not args.directory_mode:
         compile2file(args)
 
     else:
-        args.target = args.origin if args.target is None else args.target
+        args.output = args.origin if args.output is None else args.output
 
-        for item in filter(lambda x: not x.is_dir(), (args.target, args.origin)):
+        for item in filter(lambda x: not x.is_dir(), (args.output, args.origin)):
             polite_error(f"Path {item} is not a valid directory.")
 
         # Find the new mappings.
         mappings = {path: str(path).removesuffix(".lw") + ".py" for path in args.origin.iterdir() if path.suffix == ".lw"}
         mappings = {k: p.Path(v) for k, v in mappings.items()}
 
-        for origin, target in mappings.items():
+        for origin, output in mappings.items():
             args.origin = origin
-            args.target = target
+            args.output = output
             compile2file(args)
 
 

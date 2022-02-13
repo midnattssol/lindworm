@@ -1,2 +1,2 @@
 #!/bin/sh
-sigurd "examples" --dir --log "sigurd_log.log" --force-recompile --beautifier autopep8
+sigurd "temp.lw" --output "temp.py" --log "sigurd_log.log" --force-recompile --beautifier black

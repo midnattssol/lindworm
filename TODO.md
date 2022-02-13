@@ -1,36 +1,28 @@
 [===] Render all lindworm files in project
-[== ] Atom syntax formatting
+[===] Atom syntax formatting
+[===] Multiline comments with ###
+[===] (On, Yes, Off, No, done: over, contains, unless, isnt)
 [   ] Fix how lambdas and compositions and probably everything coming as well have to be parenthesized
 [   ] Speed!
 [   ] Nested lambdas don't work
 [   ] Balanced brackets for nested lambdas: add second rule
-[   ] Multiline comments with ###
-[===] (On, Yes, Off, No, done: over, contains, unless, isnt)
 [   ] Result
 
-item = Err("hello world")
-a = (unwrap expensive()) + 10
 
-__temporary = expensive()
-if __temporary.is_err():
-    return __temporary.unwrap()
+# Potential error implementation
+    Result Err Ok
 
-a = (__temporary.unwrap()) + 10
+    item = Err("hello world")
+    a = (unwrap expensive()) + 10
 
+    __temporary = expensive()
+    if __temporary.is_err():
+        return __temporary.unwrap()
 
-__temporary = expensive()
-if __temporary.is_err():
-    return __temporary.unwrap()
+    a = (__temporary.unwrap()) + 10
 
-[LINE LEFT] (__temporary.unwrap()) [LINE RIGHT]
+    __temporary = expensive()
+    if __temporary.is_err():
+        return __temporary.unwrap()
 
-
-Result Err Ok
-
-a contains b -> b in a
-func over [1, 2, 3] -> map(func, [1, 2, 3])
-
-unless a == 1:
-    print(a)
-
-unless ...: -> if not (...):
+    [LINE LEFT] (__temporary.unwrap()) [LINE RIGHT]

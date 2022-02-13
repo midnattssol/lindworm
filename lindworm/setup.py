@@ -1,6 +1,6 @@
-from setuptools import setup, find_namespace_packages
 import pathlib as p
 
+from setuptools import find_namespace_packages, setup
 
 setup(
     name='lindworm',
@@ -18,7 +18,8 @@ setup(
         "more_itertools",
         "regex",
         "colorama",
-        "frozendict"
+        "frozendict",
+        "black"
     ],
     scripts=[
         "bin/lindworm",

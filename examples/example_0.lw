@@ -22,5 +22,11 @@ add_ten_and_print(13)
 multiply = *$
 print(multiply(10, 20))
 
-product = ->reduce(*$, _, 1)
+product = -> foldl(*$, _)
 print(product([10, 20, 30]))
+
+
+# Unless and No
+prevented_from_printing = No
+unless prevented_from_printing:
+    print("hi")

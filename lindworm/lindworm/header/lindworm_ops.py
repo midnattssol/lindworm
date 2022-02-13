@@ -1,4 +1,7 @@
 import operator as op
+
+import more_itertools
+
 from .functions import *
 
 OPERATORS = {
@@ -33,6 +36,7 @@ OPERATORS |= {
     "isnt": op.is_not,
     "::": it.chain,
     "::*": lambda a, b: it.chain(a, *b),
+    ":::": lambda a, b: it.chain(more_itertools.always_iterable(a), more_itertools.always_iterable(b)),
     "??": lambda a, b: a if a is not None else b,
     "..>": lambda f, g: compose(f, g, False, 0),
     "..*>": lambda f, g: compose(f, g, False, 1),

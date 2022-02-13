@@ -1,5 +1,6 @@
 import dataclasses as dc
 import typing as t
+
 import more_itertools as mit
 
 

@@ -1,12 +1,12 @@
-import json
 import dataclasses as dc
+import json
 import typing as t
-import more_itertools as mit
 
+import more_itertools as mit
 import regex as re
 
-from .constants import constants
 from ..utils import *
+from .constants import constants
 
 # FORMAT_REGEX = re.compile(r"\{([^{}:]*):(-?[^{}\-:]*)(?>->([^{}]*))?\}")
 

@@ -1,9 +1,11 @@
+#!/usr/bin/env python3.10
+"""Validates Lindworm data before building."""
 import pathlib as p
-import cson
 import unittest
 
+import cson
 
-RULE_DIRECTORY = p.Path("lindworm/sigurdlib/rules")
+RULE_DIRECTORY = p.Path(__file__).parent.parent / "lindworm/lindworm/data/rules"
 
 
 class LindwormBuildValidator(unittest.TestCase):

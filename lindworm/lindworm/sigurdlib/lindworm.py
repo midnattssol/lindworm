@@ -1,27 +1,26 @@
-import sys
-import os
-import subprocess
-import cson
 import dataclasses as dc
+import datetime as dt
 import hashlib
 import io
 import itertools as it
+import os
 import pathlib as p
+import subprocess
+import sys
 import tokenize
-import datetime as dt
 import typing as t
 
-import numpy as np
-import autopep8
+import cson
 import mako
 import mako.template
 import more_itertools as mit
+import numpy as np
 import regex as re
 
 from ..utils import *
 from .constants import constants
 from .dialect import PythonDialectTokenization
-from .rule import Rule, FORMAT_REGEX
+from .rule import FORMAT_REGEX, Rule
 from .token import SimpleToken
 
 __version__ = "0.1.0"
@@ -65,6 +64,10 @@ class LindwormTokenization(PythonDialectTokenization):
 
     def parse_metadata(self, string: str) -> t.Optional[dict]:
         """Parse file metadata from string contents. Returns None if the metadata is invalid."""
+
+        if not ("# " + METADATA_BEGIN in string and "# " + METADATA_FINAL in string):
+            return None
+
         metadata_block = string.split("# " + METADATA_BEGIN)[1].split("# " + METADATA_FINAL)[0]
         metadata_block = (i.removeprefix("# ") for i in metadata_block.splitlines(True))
         try:
@@ -74,6 +77,8 @@ class LindwormTokenization(PythonDialectTokenization):
 
     def to_python(self, *, beautifier="none"):
         self.logger.write(f"INFO | Compiling self.\n")
+        self.convert_multiline_comments()
+
         metadata = self.generate_metadata()
         self.compile_tokens()
         template = load_template(self.template_dir / "default.py.mako")
@@ -90,7 +95,21 @@ class LindwormTokenization(PythonDialectTokenization):
         )
 
         if beautifier == "autopep8":
+            import autopep8
             compiled = autopep8.fix_code(compiled, {'aggressive': 3})
+
+        elif beautifier == "black":
+            # Buffer the code into a temporary file to run black
+            # from the command line on it.
+            filename = tempfile()
+            with open(filename, "w", encoding="utf-8") as file:
+                file.write(compiled)
+            subprocess.run(["black", filename, "-q"])
+            with open(filename, "r", encoding="utf-8") as file:
+                compiled = file.read()
+
+        elif beautifier != "none":
+            raise ValueError(f"Unknown beautifier '{beautifier}'")
 
         self.logger.write(f"INFO | Compilation done!.\n")
 
@@ -370,6 +389,23 @@ class LindwormTokenization(PythonDialectTokenization):
         """Gets the type at a location."""
         idx = self.source2token_idx(index)
         return self.tokens[idx].exact_type
+
+    def convert_multiline_comments(self):
+        """Removes multiline comments denoted by ###-blocks from the token stream."""
+        in_comment = False
+        new_tokens = []
+
+        # TODO: This just removes them but it would be nice to keep them
+        for token in self.tokens:
+            if token.exact_type == constants.COMMENT and token.string.startswith("###"):
+                in_comment = not in_comment
+                continue
+            if in_comment:
+                continue
+            new_tokens.append(token)
+
+        self.tokens = new_tokens
+        self.rebuild_source()
 
 # ===| Functions |===
 

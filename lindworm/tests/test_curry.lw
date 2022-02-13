@@ -1,0 +1,13 @@
+
+
+def test_curry(unittester):
+    # Tests currying.
+
+    list_item = [1, 2, 3, 4]
+
+    unittester.assertEqual(+$(10, 20), 10 + 20)
+    unittester.assertEqual(list(::$(range(10), range(20))), list(range(10) :: range(20)))
+    unittester.assertEqual(
+        list(map$(list)([range(10), range(11)])),
+        list(map(list, [range(10), range(11)]))
+    )

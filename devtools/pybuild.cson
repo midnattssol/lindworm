@@ -1,25 +1,33 @@
 regexes:
     function: '^def\\s+([^_][^\\s)()]+)'
     class: '^class\\s+([^_][^\\s)(:]+)'
-    global: '^([A-Z][A-Z_0-9]+)\\s*='
+    global: '^([A-Z][A-Z_0-9]{2,})\\s*='
     test_function: '^def\\s+(test_[^\\s)()]+)'
 
 tasks:
     mkinit:
-        "lindworm/lindworm/header": [
+        "../lindworm/lindworm/header": [
             'function'
             'class'
             'global'
         ]
 
-        "lindworm/lindworm/sigurdlib": [
+        "../lindworm/lindworm/sigurdlib": [
             "class"
         ]
-        "lindworm/lindworm/utils": [
+
+        "../lindworm/lindworm/utils": [
             'function'
             'class'
             'global'
         ]
-        tests: [
+
+        "../lindworm/lindworm/new_builtins": [
+            'function'
+            'class'
+            'global'
+        ]
+
+        "../lindworm/tests": [
             'test_function'
         ]

@@ -1,4 +1,8 @@
-lambda:
+lambda_explicit:
+    regex: "(?<inner>(?<balanced_parens>\\([^)(]*+(?:(?&balanced_parens)[^)(]*)*+\\)))\\s*(->|\u03bb)"
+    formatter: '(lambda { group:inner -> [1:-1] }: { token:1 -> st })'
+
+lambda_implicit:
     regex: '->|λ'
     formatter: '(lambda _=None: {token:1->st})'
 
@@ -27,7 +31,7 @@ curry:
     # Matches $(...).
     # Hellish parenthesis matching
     regex: '\\$(?<inner>\\w*(?<balanced_parens>\\([^)(]*+(?:(?&balanced_parens)[^)(]*)*+\\)))'
-    formatter: 'lindworm.header.curry({token:-1}, *[{group:inner->[1:-1]}])'
+    formatter: 'lindworm.header.curry({token:-1},*[{group:inner->[1:-1]}])'
 
 ternary:
     # C-style ternary expressions.

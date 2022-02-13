@@ -1,69 +1,30 @@
 #!/usr/bin/env python3.10
+from .result import Err, Ok, Result, UnwrapError
+
 """New builtins for Lindworm."""
 
-from itertools import (
-    chain,
-    groupby,
-    product,
-    permutations,
-    combinations,
-    count
-)
+from functools import reduce as fold_right
+from itertools import (chain, combinations, count, groupby, permutations,
+                       product)
 
-from more_itertools import (
-    split_at,
-    split_before,
-    split_after,
-    split_into,
-    split_when,
-    bucket,
-    spy,
-    sliding_window,
-    repeat_last,
-    adjacent,
-    collapse,
-    convolve,
-    flatten,
-    ilen,
-    is_sorted,
-    minmax,
-    first_true,
-    unique_to_each,
-    unique_in_window,
-    unique_everseen,
-    unique_justseen,
-    duplicates_everseen,
-    duplicates_justseen,
-    strip,
-    lstrip,
-    rstrip,
-    nth_or_last,
-    distinct_permutations,
-    distinct_combinations,
-    circular_shifts,
-    partitions,
-    set_partitions,
-    product_index,
-    combination_index,
-    permutation_index,
-    powerset,
-    nth_product,
-    nth_permutation,
-    nth_combination,
-    always_iterable,
-    always_reversible,
-    countable,
-    consumer,
-    with_iter,
-    iter_except,
-    locate,
-    rlocate,
-    replace,
-    numeric_range,
-    iterate,
-    consume,
-)
+from more_itertools import (adjacent, always_iterable, always_reversible,
+                            bucket, circular_shifts, collapse,
+                            combination_index, consume, consumer, convolve,
+                            countable, distinct_combinations,
+                            distinct_permutations, duplicates_everseen,
+                            duplicates_justseen, first_true, flatten, ilen,
+                            is_sorted, iter_except, iterate, locate, lstrip,
+                            minmax, nth_combination, nth_or_last,
+                            nth_permutation, nth_product, numeric_range,
+                            partitions, permutation_index, powerset,
+                            product_index, repeat_last, replace, rlocate,
+                            rstrip, set_partitions, sliding_window,
+                            split_after, split_at, split_before, split_into,
+                            split_when, spy, strip, unique_everseen,
+                            unique_in_window, unique_justseen, unique_to_each,
+                            with_iter)
 
-from functools import (
-    reduce
-)
+
+def fold_left(*args):
+    """Left fold."""
+    return fold_right(args[0], reversed(args[1]), *args[2:])

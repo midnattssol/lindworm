@@ -1,9 +1,9 @@
-import more_itertools as mit
-import itertools as it
-import regex as re
 import dataclasses as dc
+import itertools as it
 import typing as t
 
+import more_itertools as mit
+import regex as re
 
 ReplacerString = t.TypeVar("RegexReplacementStr", str, bytes)
 

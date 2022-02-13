@@ -11,18 +11,22 @@ binary_coalesce_none:
     regex: '(\\?\\?)'
     formatter: '({token:-1} if {token:-1} is not None else {token:1})'
 
+binary_chain_always_iterable_iterators:
+    regex: '(:::)'
+    formatter: 'chain(always_iterable({token:-1}),always_iterable({token:1}))'
+
 binary_chain_iterators:
     regex: '(::(?<stars>(?>\\w*\\*\\w*){0,1}))'
-    formatter: 'chain({token:-1}, {group:stars}{token:1})'
+    formatter: 'chain({token:-1},{group:stars}{token:1})'
 
 # Composition
-binary_compose_right:
-    regex: '\\.\\.(?<stars>(?>\\w*\\*\\w*){0,2})>?'
-    formatter: 'lindworm.header.compose({token:-1}, {token:1}, True, { group:stars -> len })'
-
 binary_compose_left:
     regex: '<(?<stars>(?>\\w*\\*\\w*){0,2})\\.\\.'
-    formatter: 'lindworm.header.compose({token:-1}, {token:1}, False, { group:stars -> len })'
+    formatter: 'lindworm.header.compose({token:-1},{token:1},False,{ group:stars -> len })'
+
+binary_compose_right:
+    regex: '\\.\\.(?<stars>(?>\\w*\\*\\w*){0,2})>?'
+    formatter: 'lindworm.header.compose({token:-1},{token:1},True,{ group:stars -> len })'
 
 # Piping
 binary_pipe_right:

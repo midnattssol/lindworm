@@ -5,9 +5,9 @@ import itertools as it
 import pathlib as p
 
 import cson
+import isort
 import more_itertools as mit
 import regex as re
-
 
 HASHBANG = "#!/usr/bin/env python3.10\n"
 IMPORT_REGEX = re.compile(r"from\s+\.\S+\s+import((\s*\([^)]*\))|(.*$))\n", re.M)
@@ -39,8 +39,7 @@ def build_folder_init(folder: p.Path, regexes):
     for filename in submodules_in_folder(folder):
         with open(filename) as file_:
             contents = file_.read()
-            item = [[f"# Regex '{name}'", *sorted(re.findall(regex, contents, re.M))] for name, regex in regexes.items()]
-            item = filter(lambda i: len(i) != 1, item)
+            item = [sorted(re.findall(regex, contents, re.M)) for name, regex in regexes.items()]
             item = mit.flatten(item)
             item = list(item)
             if not item:
@@ -49,9 +48,11 @@ def build_folder_init(folder: p.Path, regexes):
             string = f"from .{filename.stem.split('.', 1)[0]} import {item}\n"
         buffer += string
 
+    # Sorts imports.
     with open(folder / "__init__.py", "w") as file:
-        contents = buffer + right_buffer
-        file.write(contents.rstrip() + "\n")
+        code = (buffer + right_buffer).rstrip() + "\n"
+        code = isort.code(code)
+        file.write(code)
 
 
 def from_file(filename: p.Path) -> None:

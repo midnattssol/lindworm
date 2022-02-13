@@ -7,6 +7,6 @@ build/
 
 # Compiled Lindworm files
 examples/*.py
-tests/*.py
+lindworm/tests/*.py
 !tests/__init__.py
 *.lw.py

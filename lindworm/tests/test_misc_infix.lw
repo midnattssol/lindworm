@@ -1,0 +1,67 @@
+import operator as op
+
+
+def test_keywords(unittester):
+
+    # True and None analogues.
+    unittester.assertIs(On, True)
+    unittester.assertIs(Yes, True)
+
+    unittester.assertIs(Off, False)
+    unittester.assertIs(No, False)
+
+    # New keywords.
+    hundred = 100
+    unittester.assertTrue(range(300) contains hundred)
+    unittester.assertFalse([] contains hundred)
+    unittester.assertTrue(hundred isnt None)
+    unittester.assertFalse(None isnt None)
+
+    # Unless test.
+    unless_branch_executed = No
+    unless False:
+        unless_branch_executed = Yes
+
+    unittester.assertTrue(unless_branch_executed)
+
+
+def test_iterator_chain(unittester):
+    song_lines = [
+        "And if you don't love me now\n"
+        "You will never love me again\n"
+        "I can still hear you saying\n",
+        "You would never break the chain\n"
+    ]
+
+    # Normal iterator chain.
+    two_lines = song_lines[0] :: song_lines[1]
+    two_lines = "".join(two_lines)
+
+    unittester.assertEqual(two_lines, "".join(song_lines[:2]))
+
+    # Chain-equals.
+    two_lines = song_lines[0]
+    two_lines ::= song_lines[1]
+    two_lines = "".join(two_lines)
+
+    unittester.assertEqual(two_lines, "".join(song_lines[:2]))
+
+    # Chain-star-equals.
+    full_lyrics = song_lines[0]
+    full_lyrics ::*= song_lines[1:]
+    full_lyrics = "".join(full_lyrics)
+
+    unittester.assertEqual(full_lyrics, "".join(song_lines))
+
+    # Always iterable iterator chain.
+
+    unittester.assertEqual(ilen(None ::: None), 0)
+    unittester.assertEqual(ilen(None ::: 1), 1)
+    unittester.assertEqual(ilen(1 ::: 1), 2)
+    unittester.assertEqual(ilen([1] ::: 1), 2)
+    unittester.assertEqual(ilen([1, 2, 3] ::: 1), 4)
+
+    item = None
+    item :::= None
+
+    unittester.assertEqual(ilen(item), 0)

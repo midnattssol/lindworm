@@ -3,6 +3,10 @@ eq_coalesce_none:
     regex: '(\\?\\?=)'
     formatter: '{token:-1} = ({token:-1} if {token:-1} is not None else {token:1})'
 
+eq_chain_always_iterable_iterators:
+    regex: '(:::=)'
+    formatter: '{token:-1} = chain(always_iterable({token:-1}),always_iterable({token:1}))'
+
 eq_chain_iterators:
     regex: '(::(?<stars>(?>\\w*\\*\\w*){0,1})=)'
-    formatter: '{token:-1} = chain({token:-1}, {group:stars}{token:1})'
+    formatter: '{token:-1} = chain({token:-1},{group:stars}{token:1})'

@@ -1,4 +1,4 @@
-cmd: 'sh build.sh'
+cmd: 'sh devtools/build.sh'
 sh: true
 
 errorMatch:
