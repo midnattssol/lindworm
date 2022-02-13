@@ -1,7 +1,7 @@
 
 def test_lambda(unittester):
-    lambda_0 = => _ + 3
-    lambda_1 = => 3
+    lambda_0 ==> _ + 3
+    lambda_1 ==> 3
 
     unittester.assertEqual(lambda_0(5), 8)
 

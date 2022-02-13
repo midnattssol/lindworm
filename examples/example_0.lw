@@ -2,7 +2,7 @@
 import operator as op
 
 # Shorthand lambdas.
-greeter = => print(f"Hello {_}!")
+greeter ==> print(f"Hello {_}!")
 
 # None coalescing.
 greeting = None
@@ -22,7 +22,7 @@ add_ten_and_print(13)
 multiply = *$
 print(multiply(10, 20))
 
-product = => foldl(*$, _)
+product ==> foldl(*$, _)
 print(product([10, 20, 30]))
 
 

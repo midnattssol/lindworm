@@ -1,3 +1,7 @@
+lambda_fat_arrow_assign_preparse:
+    regex: '(==>)'
+    formatter: '= =>'
+
 lambda_explicit:
     regex: "(?<inner>(?<balanced_parens>\\([^)(]*+(?:(?&balanced_parens)[^)(]*)*+\\)))\\s*(=>|\u03bb)"
     formatter: '(lambda { group:inner -> [1:-1] }: { token:1 -> st })'
