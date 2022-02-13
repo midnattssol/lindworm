@@ -4,7 +4,7 @@ Lindworm is my personal extension of Python, inspired by Coconut and functional 
 
 ## Installation
 
-Lindworm is on [PyPi](https://pypi.org/project/lindworm-language/), and can be installed with pip from the command line with the following command:
+Lindworm is on PyPi, and can be installed with pip from the command line with the following command:
 
     pip install lindworm-language
 
@@ -105,8 +105,3 @@ Starrable operators can have up to two stars placed inside of them to use Python
 
     [10, 20, 30] |*> print  # Equivalent to print(*[10, 20, 30])
     [11, 12] |*> +$
-
-## See also
-
-- [Atom language highlighting for Lindworm](https://github.com/midnattssol/atom-language-lindworm)
-- [Coconut](https://github.com/evhub/coconut)

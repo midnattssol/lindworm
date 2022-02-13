@@ -3,7 +3,7 @@ import pathlib as p
 from setuptools import find_namespace_packages, setup
 
 setup(
-    name='lindworm',
+    name='lindworm-language',
     version='0.1.0',
     description='Lindworm programming language compiler and standard library',
     url='https://github.com/midnattssol/lindworm',
@@ -21,6 +21,10 @@ setup(
         "frozendict",
         "black"
     ],
+    extras_require={
+        'autopep8 linting': ["autopep8"],
+        'black linting': ["black"],
+    },
     scripts=[
         "bin/lindworm",
         "bin/sigurd"

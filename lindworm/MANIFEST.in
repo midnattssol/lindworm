@@ -1,2 +1,3 @@
 recursive-include lindworm/data/rules *
 recursive-include lindworm/data/templates *
+include README.md
