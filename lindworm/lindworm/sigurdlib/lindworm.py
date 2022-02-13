@@ -239,8 +239,8 @@ class LindwormTokenization(PythonDialectTokenization):
 
             if (
                 (
-                    # Avoid going into a new line if the line is balanced.
-                    token.exact_type == constants.NEWLINE
+                    # Avoid going into a new line or another expression if the line is balanced.
+                    token.exact_type in {constants.NEWLINE, constants.COMMA}
                     and not any(balanced_tokens_depths.values())
                 )
                 or (

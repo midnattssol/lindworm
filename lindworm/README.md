@@ -8,7 +8,6 @@ Lindworm is on PyPi, and can be installed with pip from the command line with th
 
     pip install lindworm-language
 
-
 ## Examples
 
 Lindworm comes with several new operators, as well as ways to combine them. , so it can be easily switched between. It has a high compilation speed and remains both short and relatively readable after compilation. For example:
@@ -16,7 +15,6 @@ Lindworm comes with several new operators, as well as ways to combine them. , so
     # Lindworm
     factorial = -> range(1, _) |> fold_left$(*$)
     print(factorial(5))
-
 
 Compiles into this:
 
@@ -29,7 +27,6 @@ Compiles into this:
         lindworm.header.curry(fold_left, \*[lindworm.header.OPERATORS["*"]])(range(1, _))
     )
     print(factorial(5))
-
 
 ## Features
 
@@ -52,6 +49,9 @@ Compiles into this:
 | `a over b`          | `over`                    | `map(a, b)`                                                    | 0         | No                   |      ✓      |
 | `a contains b`      | `contains`                | `b in a`                                                       | 0         | No                   |      ✓      |
 | `a isnt b`          | `isnt`                    | `a is not b`                                                   | 0         | No                   |      ✓      |
+| `a xor b`           | `boolean exclusive or`    | `bool(a) ^ bool(b)`                                            | 0         | No                   |      ✓      |
+| `a ++`              | `increment`               | `a += 1`                                                       | 0         | No                   |      ✓      |
+| `a --`              | `decrement`               | `a -= 1`                                                       | 0         | No                   |      ✓      |
 
 ### Operator currying
 
@@ -74,9 +74,8 @@ Most of them come from `more_itertools`, `itertools`, and similar libraries. Thi
 
 | Syntax           | Equivalent python syntax                              | Implemented | Notes                                   |
 | :--------------- | :---------------------------------------------------- | :---------: | :-------------------------------------- |
-| `foldr(f, a, b)` | `lambda f, a, b: functools.reduce(f, a, b)`           |      ✓      |                                         |
-| `foldl(f, a, b)` | `lambda f, a, b: functools.reduce(f, reversed(a), b)` |      ✓      |                                         |
-| `foldl(f, a, b)` | `lambda f, a, b: functools.reduce(f, reversed(a), b)` |      ✓      |                                         |
+| `fold_right(f, a, b)` | `lambda f, a, b: functools.reduce(f, a, b)`           |      ✓      |                                         |
+| `fold_left(f, a, b)` | `lambda f, a, b: functools.reduce(f, reversed(a), b)` |      ✓      |                                         |
 | `Result`         |                                                       |      ✓      | Like Rust's `Result`.                   |
 | `Ok`             |                                                       |      ✓      | Like Rust's `Ok`. Subclasses `Result`.  |
 | `Err`            |                                                       |      ✓      | Like Rust's `Err`. Subclasses `Result`. |
@@ -97,6 +96,7 @@ Most of them come from `more_itertools`, `itertools`, and similar libraries. Thi
 | Syntax      | Name     | Equivalent python syntax | Implemented |
 | :---------- | :------- | :----------------------- | :---------: |
 | `unless b:` | `unless` | `if not b:`              |      ✓      |
+| `loop:`     | `loop`   | `while True:`            |      ✓      |
 | `unwrap a`  | `unwrap` |                          |             |
 
 #### Starrability

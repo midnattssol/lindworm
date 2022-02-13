@@ -1,4 +1,8 @@
 # Binary infix operators.
+binary_xor:
+    regex: '(xor)'
+    formatter: '(bool({token:-1}) ^ bool({token:1}))'
+
 binary_over:
     regex: '(over)'
     formatter: 'map({token:-1}, {token:1})'

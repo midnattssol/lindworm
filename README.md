@@ -4,10 +4,9 @@ Lindworm is my personal extension of Python, inspired by Coconut and functional 
 
 ## Installation
 
-Lindworm is on [PyPi](https://pypi.org/project/lindworm-language/), and can be installed with pip from the command line with the following command:
+Lindworm is on PyPi, and can be installed with pip from the command line with the following command:
 
     pip install lindworm-language
-
 
 ## Examples
 
@@ -16,7 +15,6 @@ Lindworm comes with several new operators, as well as ways to combine them. , so
     # Lindworm
     factorial = -> range(1, _) |> fold_left$(*$)
     print(factorial(5))
-
 
 Compiles into this:
 
@@ -30,15 +28,7 @@ Compiles into this:
     )
     print(factorial(5))
 
-
 ## Features
-
-### Starrability
-
-Starrable operators can have up to two stars placed inside of them to use Python's iterator and dictionary unpackings. For example:
-
-    [10, 20, 30] |*> print  # Equivalent to print(*[10, 20, 30])
-    [11, 12] |*> +$
 
 ### New operators
 
@@ -59,6 +49,9 @@ Starrable operators can have up to two stars placed inside of them to use Python
 | `a over b`          | `over`                    | `map(a, b)`                                                    | 0         | No                   |      ✓      |
 | `a contains b`      | `contains`                | `b in a`                                                       | 0         | No                   |      ✓      |
 | `a isnt b`          | `isnt`                    | `a is not b`                                                   | 0         | No                   |      ✓      |
+| `a xor b`           | `boolean exclusive or`    | `bool(a) ^ bool(b)`                                            | 0         | No                   |      ✓      |
+| `a ++`              | `increment`               | `a += 1`                                                       | 0         | No                   |      ✓      |
+| `a --`              | `decrement`               | `a -= 1`                                                       | 0         | No                   |      ✓      |
 
 ### Operator currying
 
@@ -71,7 +64,7 @@ Starrable operators can have up to two stars placed inside of them to use Python
 The new built-ins are currently `chain`, `combinations`, `count`, `groupby`, `permutations`, `product`, `adjacent`, `always_iterable,
 always_reversible`, `bucket`, `circular_shifts`, `collapse`, `combination_index`, `consume`, `consumer`, `convolve,
 countable`, `distinct_combinations`, `distinct_permutations`, `duplicates_everseen,
-duplicates_justseen`, `first_true`, `flatten`, `fold_left`, `fold_right`, `ilen`, `is_sorted`, `iter_except`, `iterate`, `locate`, `lstrip,
+duplicates_justseen`, `first_true`, `flatten`, `ilen`, `is_sorted`, `iter_except`, `iterate`, `locate`, `lstrip,
 minmax`, `nth_combination`, `nth_or_last`, `nth_permutation`, `nth_product`, `numeric_range,
 partitions`, `permutation_index`, `powerset`, `product_index`, `repeat_last`, `replace`, `rlocate,
 rstrip`, `set_partitions`, `sliding_window`, `split_after`, `split_at`, `split_before`, `split_into,
@@ -79,7 +72,15 @@ split_when`, `spy`, `strip`, `unique_everseen`, `unique_in_window`, `unique_just
 
 Most of them come from `more_itertools`, `itertools`, and similar libraries. This is not a stable list though!
 
-### Aliases
+| Syntax           | Equivalent python syntax                              | Implemented | Notes                                   |
+| :--------------- | :---------------------------------------------------- | :---------: | :-------------------------------------- |
+| `fold_right(f, a, b)` | `lambda f, a, b: functools.reduce(f, a, b)`           |      ✓      |                                         |
+| `fold_left(f, a, b)` | `lambda f, a, b: functools.reduce(f, reversed(a), b)` |      ✓      |                                         |
+| `Result`         |                                                       |      ✓      | Like Rust's `Result`.                   |
+| `Ok`             |                                                       |      ✓      | Like Rust's `Ok`. Subclasses `Result`.  |
+| `Err`            |                                                       |      ✓      | Like Rust's `Err`. Subclasses `Result`. |
+
+### Objects
 
 | Syntax      | Name         | Equivalent python syntax | Implemented |
 | :---------- | :----------- | :----------------------- | :---------: |
@@ -90,33 +91,17 @@ Most of them come from `more_itertools`, `itertools`, and similar libraries. Thi
 | `On`, `Yes` | `On`, `Yes`  | `True`                   |      ✓      |
 | `Off`, `No` | `Off`, `No`  | `False`                  |      ✓      |
 
-### New classes
-
-| Syntax           | Equivalent python syntax                              | Implemented | Notes                                   |
-| :--------------- | :---------------------------------------------------- | :---------: | :-------------------------------------- |
-| `Result`         |                                                       |      ✓      | Like Rust's `Result`.                   |
-| `Ok`             |                                                       |      ✓      | Like Rust's `Ok`. Subclasses `Result`.  |
-| `Err`            |                                                       |      ✓      | Like Rust's `Err`. Subclasses `Result`. |
-
-
 ### Control flow
 
 | Syntax      | Name     | Equivalent python syntax | Implemented |
 | :---------- | :------- | :----------------------- | :---------: |
 | `unless b:` | `unless` | `if not b:`              |      ✓      |
+| `loop:`     | `loop`   | `while True:`            |      ✓      |
 | `unwrap a`  | `unwrap` |                          |             |
 
-<<<<<<< HEAD
 #### Starrability
 
 Starrable operators can have up to two stars placed inside of them to use Python's iterator and dictionary unpackings. For example:
 
     [10, 20, 30] |*> print  # Equivalent to print(*[10, 20, 30])
     [11, 12] |*> +$
-
-## See also
-
-- [Atom language highlighting for Lindworm](https://github.com/midnattssol/atom-language-lindworm)
-- [Coconut](https://github.com/evhub/coconut)
-=======
->>>>>>> c51cf46246acbe3cb97160eae08fdf3f44d003e0

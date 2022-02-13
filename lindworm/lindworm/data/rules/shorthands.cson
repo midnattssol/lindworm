@@ -3,6 +3,10 @@ shorthand_unless:
     regex: '\\b(unless)\\b'
     formatter: 'if not'
 
+shorthand_loop:
+    regex: '\\b(loop)\\b'
+    formatter: 'while True'
+
 shorthand_isnt:
     regex: '\\b(isnt)\\b'
     formatter: 'is not'

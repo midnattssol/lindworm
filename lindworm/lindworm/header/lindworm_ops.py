@@ -33,7 +33,12 @@ OPERATORS = {
 
 # New operators
 OPERATORS |= {
+    "xor": lambda a, b: bool(a) ^ bool(b),
     "isnt": op.is_not,
+    "over": map,
+    "contains": lambda a, b: b in a,
+
+    "$": curry,
     "::": it.chain,
     "::*": lambda a, b: it.chain(a, *b),
     ":::": lambda a, b: it.chain(more_itertools.always_iterable(a), more_itertools.always_iterable(b)),
@@ -47,13 +52,10 @@ OPERATORS |= {
     "<..": lambda f, g: compose(f, g, True, 0),
     "<*..": lambda f, g: compose(f, g, True, 1),
     "<**..": lambda f, g: compose(f, g, True, 2),
-    "$": curry,
     "|>": lambda a, b: b(a),
     "|*>": lambda a, b: b(*a),
     "|**>": lambda a, b: b(**a),
     "<|": lambda a, b: a(b),
     "<*|": lambda a, b: a(*b),
     "<**|": lambda a, b: a(**b),
-    "over": map,
-    "contains": lambda a, b: b in a
 }

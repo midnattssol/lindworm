@@ -16,22 +16,9 @@ def regexified(items):
     return s
 
 
-OPERATOR_REGEX = regexified([i for i in lindworm.header.OPERATORS if not set(string.ascii_letters) & set(i)])
-
-print(cson.dumps(OPERATOR_REGEX))
-exit()
-
-
 def main():
-    item = {
-        "operator_curry": {
-            "regex": OPERATOR_CURRY_REGEX,
-            "formatter": "lindworm.header.OPERATORS['{ group:operator }']",
-        },
-    }
-
-    result = cson.dumps(item, indent=4)
-    print(result)
+    OPERATOR_REGEX = regexified([i for i in lindworm.header.OPERATORS if not set(string.ascii_letters) & set(i)])
+    print(cson.dumps(OPERATOR_REGEX))
 
 
 if __name__ == '__main__':

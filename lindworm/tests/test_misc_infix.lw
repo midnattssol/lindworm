@@ -1,6 +1,17 @@
 import operator as op
 
 
+def test_increment_decrement(unittester):
+    i = 0
+    i ++
+
+    unittester.assertEqual(i, 1)
+
+    i --
+    unittester.assertEqual(i, 0)
+
+
+
 def test_keywords(unittester):
 
     # True and None analogues.
@@ -17,12 +28,33 @@ def test_keywords(unittester):
     unittester.assertTrue(hundred isnt None)
     unittester.assertFalse(None isnt None)
 
+    # Boolean exclusive or test.
+    unittester.assertIs(0 xor 0, False)
+    unittester.assertIs(1 xor 0, True)
+    unittester.assertIs(0 xor 1, True)
+    unittester.assertIs(1 xor 1, False)
+
+    unittester.assertIs(None xor [10, 20, 30], True)
+
     # Unless test.
     unless_branch_executed = No
     unless False:
         unless_branch_executed = Yes
 
     unittester.assertTrue(unless_branch_executed)
+
+    # Loop test.
+    i = 100
+    acc = 0
+
+    loop:
+        i -= 1
+        acc += 1
+        unless i:
+            break
+
+    unittester.assertEqual(i, 0)
+    unittester.assertEqual(acc, 100)
 
 
 def test_iterator_chain(unittester):

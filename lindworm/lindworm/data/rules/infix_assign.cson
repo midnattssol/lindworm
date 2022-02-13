@@ -10,3 +10,8 @@ eq_chain_always_iterable_iterators:
 eq_chain_iterators:
     regex: '(::(?<stars>(?>\\w*\\*\\w*){0,1})=)'
     formatter: '{token:-1} = chain({token:-1},{group:stars}{token:1})'
+
+# Increment and decrement operators.
+shorthand_increment_decrement:
+    regex: "(\\+\\+|--)"
+    formatter: "{ token:-1 } { group: 0 -> [:1] }= 1"

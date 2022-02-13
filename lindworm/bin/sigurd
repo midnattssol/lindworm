@@ -4,6 +4,7 @@ import argparse
 import pathlib as p
 import py_compile
 import sys
+import time
 import typing as t
 
 import colorama
@@ -86,6 +87,8 @@ def main() -> t.NoReturn:
     parser.add_argument('--logger', metavar='FILE', dest='logger', type=p.Path, help='(dev) choose logfile location (default: none)')
     parser.add_argument('--dirmode', dest='directory_mode',  action="store_const", const=True,
                         default=False, help="compile all .lw files in the directory (default: false)")
+    parser.add_argument('--recursive', dest='directory_mode_recursive',  action="store_const", const=True,
+                        default=False, help="in directory mod, compile subdirectories as well (default: false)")
     parser.add_argument('--bytecode', dest='bytecode_mode',  action="store_const", const=True,
                         default=False, help="compile files to bytecode instead of Python code (default: false)")
     parser.add_argument(
@@ -115,6 +118,8 @@ def main() -> t.NoReturn:
 
     if args.bytecode_mode and args.output:
         polite_error("the --bytecode and --output options are mutually exclusive.")
+    if args.directory_mode_recursive and not args.directory_mode:
+        polite_error("the --recursive option requires the --dirmode option")
 
     if not args.directory_mode:
         compile2file(args)
@@ -126,7 +131,8 @@ def main() -> t.NoReturn:
             polite_error(f"Path {item} is not a valid directory.")
 
         # Find the new mappings.
-        mappings = {path: str(path).removesuffix(".lw") + ".py" for path in args.origin.iterdir() if path.suffix == ".lw"}
+        iterator = args.origin.glob("*.lw") if not args.directory_mode_recursive else args.origin.rglob("*.lw")
+        mappings = {path: str(path).removesuffix(".lw") + ".py" for path in iterator}
         mappings = {k: p.Path(v) for k, v in mappings.items()}
 
         for origin, output in mappings.items():
