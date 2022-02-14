@@ -15,21 +15,31 @@ class LindwormTester(unittest.TestCase):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Run Lindworm tests.')
-    parser.add_argument('--tests', dest='tests', nargs="+", help='run the following tests (default: all)')
+    parser = argparse.ArgumentParser(description="Run Lindworm tests.")
+    parser.add_argument(
+        "--tests",
+        dest="tests",
+        nargs="+",
+        help="run the following tests (default: all)",
+    )
     args = parser.parse_args()
 
     def _relative_to_file_(path):
         return str(p.Path(__file__).parent / path)
 
     # Build and add tests.
-    subprocess.call(["sigurd", "--dir", _relative_to_file_("tests"), "--force-recompile"])
+    code = subprocess.call(
+        ["sigurd", "--dir", _relative_to_file_("tests"), "--force-recompile"]
+    )
+    if code:
+        exit(code)
     import tests
 
     for name in dir(tests):
         item = getattr(tests, name)
         if (
-            name.startswith("test_") and callable(item)
+            name.startswith("test_")
+            and callable(item)
             and (args.tests is None or name.removeprefix("test_") in args.tests)
         ):
             setattr(LindwormTester, name, item)
@@ -37,5 +47,5 @@ def main():
     unittest.main(verbosity=4)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

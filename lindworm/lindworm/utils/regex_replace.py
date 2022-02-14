@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.10
 import dataclasses as dc
 import itertools as it
 import typing as t

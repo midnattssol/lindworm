@@ -12,7 +12,8 @@ def regexified(items):
         map(
             re.escape,
             sorted(items, key=len, reverse=True),
-        ))
+        )
+    )
     return s
 
 
@@ -32,5 +33,5 @@ def main():
     print(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

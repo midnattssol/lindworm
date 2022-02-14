@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.10
 import operator as op
 
 import more_itertools
@@ -37,11 +38,12 @@ OPERATORS |= {
     "isnt": op.is_not,
     "over": map,
     "contains": lambda a, b: b in a,
-
     "$": curry,
     "::": it.chain,
     "::*": lambda a, b: it.chain(a, *b),
-    ":::": lambda a, b: it.chain(more_itertools.always_iterable(a), more_itertools.always_iterable(b)),
+    ":::": lambda a, b: it.chain(
+        more_itertools.always_iterable(a), more_itertools.always_iterable(b)
+    ),
     "??": lambda a, b: a if a is not None else b,
     "..>": lambda f, g: compose(f, g, False, 0),
     "..*>": lambda f, g: compose(f, g, False, 1),

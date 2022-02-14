@@ -63,7 +63,7 @@ def compile2file(args: argparse.ArgumentParser):
 
     if needs_compiling:
         print(f"Compiling '{args.origin}'.")
-        result = compiler.to_python(beautifier=args.beautifier)
+        result = compiler.to_python(linters=args.linters)
 
         # Print to stdout if there is no output, otherwise write it to the file.
         if args.output is None:
@@ -91,11 +91,10 @@ def main() -> t.NoReturn:
     parser = argparse.ArgumentParser(description="Compile Lindworm code to Python.")
     parser.add_argument("origin", metavar="FILE", type=p.Path, help="origin file")
     parser.add_argument(
-        "--beautifier",
-        metavar="B",
-        dest="beautifier",
-        type=str,
-        help="use the chosen beautifier on the input (default: none)",
+        "--linters",
+        metavar="L",
+        dest="linters",
+        help="use the chosen linters on the input (default: isort)",
     )
     parser.add_argument(
         "--output",
@@ -153,24 +152,26 @@ def main() -> t.NoReturn:
     args = parser.parse_args()
 
     args.logger = args.logger if args.logger is not None else "/dev/null"
-    args.beautifier = args.beautifier if args.beautifier is not None else "none"
+    args.linters = args.linters if args.linters is not None else ["isort"]
     args.overwrite_mode = (
         args.overwrite_mode if args.overwrite_mode is not None else "L"
     )
 
     valid = {
-        "beautifier": ["none", "autopep8", "black"],
-        "overwrite_mode": "ANL",
+        "linters": lambda seq: (
+            not seq
+            or (
+                all(i in ["autopep8", "black", "isort"] for i in seq)
+                and len(set(seq)) == len(seq)
+            )
+        ),
+        "overwrite_mode": "ANL".__contains__,
     }
 
-    for key, value in valid.items():
-        if getattr(args, key) not in value:
-            formatted_option = (
-                key[0] if isinstance(key, list) and len(key) == 1 else key
-            )
-            polite_error(
-                f"'{formatted_option}' is not a valid option for '--{key}' (valid options are {', '.join(value)})"
-            )
+    for key, validator in valid.items():
+        actual = getattr(args, key)
+        if not validator(actual):
+            polite_error(f"'{actual}' is not a valid option for '--{key}'.")
 
     if args.bytecode_mode and args.output:
         polite_error("the --bytecode and --output options are mutually exclusive.")

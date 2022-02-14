@@ -1,3 +1,4 @@
+#!/usr/bin/env lindworm
 import operator as op
 
 

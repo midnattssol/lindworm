@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.10
 import dataclasses as dc
 import datetime as dt
 import io

@@ -102,11 +102,16 @@ class LindwormTokenization(PythonDialectTokenization):
         except cson.ParseError:
             return None
 
-    def to_python(self, *, beautifier="none", segmented=False):
+    def to_python(self, *, linters=None, has_been_segmented=False) -> str:
+        """Compiles itself to Python code, returning the compiled code as a string."""
+
+        # Defaults to using isort as a linter
+        if linters is None:
+            linters = ["isort"]
 
         self.logger.write(f"INFO | Compiling self.\n")
 
-        if segmented:
+        if has_been_segmented:
             self.compile_tokens()
             self.rebuild_source(4)
             return self.source
@@ -119,7 +124,7 @@ class LindwormTokenization(PythonDialectTokenization):
         result = ""
         for i, segment in enumerate(self.segment_at_definitions()):
             self.logger.write(f"INFO | Rendering segment #{i}.\n")
-            result += segment.to_python(beautifier=beautifier, segmented=True)
+            result += segment.to_python(has_been_segmented=True)
 
         metadata = self.generate_metadata()
         metadata_lines = cson.dumps(metadata, indent=4).splitlines()
@@ -128,12 +133,14 @@ class LindwormTokenization(PythonDialectTokenization):
 
         metadata_str = "\n".join(map("# ".__add__, metadata_lines))
 
-        if beautifier == "autopep8":
+        valid_linters = ["autopep8", "black", "isort"]
+
+        if "autopep8" in linters:
             import autopep8
 
             result = autopep8.fix_code(result, {"aggressive": 3})
 
-        elif beautifier == "black":
+        if "black" in linters:
             # Buffer the code into a temporary file to run black
             # from the command line on it.
             filename = tempfile()
@@ -143,8 +150,14 @@ class LindwormTokenization(PythonDialectTokenization):
             with open(filename, "r", encoding="utf-8") as file:
                 result = file.read()
 
-        elif beautifier != "none":
-            raise ValueError(f"Unknown beautifier '{beautifier}'")
+        if "isort" in linters:
+            import isort
+
+            result = isort.code(result)
+
+        for linter in linters:
+            if linter not in valid_linters:
+                raise ValueError(f"Unknown linter '{linter}'")
 
         result = TEMPLATE.render(source=result, metadata=metadata_str)
         self.logger.write(f"INFO | Compilation done!.\n")

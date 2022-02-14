@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.10
 """Token constants."""
 import tokenize
 
@@ -78,76 +79,82 @@ class constants:
     ENCODING = iota()
     WHITESPACE = iota()
 
-    tok_name = {value: name for name, value in locals().items() if isinstance(value, int) and not name.startswith('_')}
+    tok_name = {
+        value: name
+        for name, value in locals().items()
+        if isinstance(value, int) and not name.startswith("_")
+    }
 
     EXACT_TOKEN_TYPES = {
-        '!=': NOTEQUAL,
-        '%': PERCENT,
-        '%=': PERCENTEQUAL,
-        '&': AMPER,
-        '&=': AMPEREQUAL,
-        '(': LPAR,
-        ')': RPAR,
-        '*': STAR,
-        '**': DOUBLESTAR,
-        '**=': DOUBLESTAREQUAL,
-        '*=': STAREQUAL,
-        '+': PLUS,
-        '+=': PLUSEQUAL,
-        ',': COMMA,
-        '-': MINUS,
-        '-=': MINEQUAL,
-        '->': RARROW,
-        '.': DOT,
-        '...': ELLIPSIS,
-        '/': SLASH,
-        '//': DOUBLESLASH,
-        '//=': DOUBLESLASHEQUAL,
-        '/=': SLASHEQUAL,
-        ':': COLON,
-        ':=': COLONEQUAL,
-        ';': SEMI,
-        '<': LESS,
-        '<<': LEFTSHIFT,
-        '<<=': LEFTSHIFTEQUAL,
-        '<=': LESSEQUAL,
-        '=': EQUAL,
-        '==': EQEQUAL,
-        '>': GREATER,
-        '>=': GREATEREQUAL,
-        '>>': RIGHTSHIFT,
-        '>>=': RIGHTSHIFTEQUAL,
-        '@': AT,
-        '@=': ATEQUAL,
-        '[': LSQB,
-        ']': RSQB,
-        '^': CIRCUMFLEX,
-        '^=': CIRCUMFLEXEQUAL,
-        '{': LBRACE,
-        '|': VBAR,
-        '|=': VBAREQUAL,
-        '}': RBRACE,
-        '~': TILDE,
+        "!=": NOTEQUAL,
+        "%": PERCENT,
+        "%=": PERCENTEQUAL,
+        "&": AMPER,
+        "&=": AMPEREQUAL,
+        "(": LPAR,
+        ")": RPAR,
+        "*": STAR,
+        "**": DOUBLESTAR,
+        "**=": DOUBLESTAREQUAL,
+        "*=": STAREQUAL,
+        "+": PLUS,
+        "+=": PLUSEQUAL,
+        ",": COMMA,
+        "-": MINUS,
+        "-=": MINEQUAL,
+        "->": RARROW,
+        ".": DOT,
+        "...": ELLIPSIS,
+        "/": SLASH,
+        "//": DOUBLESLASH,
+        "//=": DOUBLESLASHEQUAL,
+        "/=": SLASHEQUAL,
+        ":": COLON,
+        ":=": COLONEQUAL,
+        ";": SEMI,
+        "<": LESS,
+        "<<": LEFTSHIFT,
+        "<<=": LEFTSHIFTEQUAL,
+        "<=": LESSEQUAL,
+        "=": EQUAL,
+        "==": EQEQUAL,
+        ">": GREATER,
+        ">=": GREATEREQUAL,
+        ">>": RIGHTSHIFT,
+        ">>=": RIGHTSHIFTEQUAL,
+        "@": AT,
+        "@=": ATEQUAL,
+        "[": LSQB,
+        "]": RSQB,
+        "^": CIRCUMFLEX,
+        "^=": CIRCUMFLEXEQUAL,
+        "{": LBRACE,
+        "|": VBAR,
+        "|=": VBAREQUAL,
+        "}": RBRACE,
+        "~": TILDE,
     }
 
     # https://docs.python.org/3/reference/expressions.html#operator-precedence
-    PRIORITY_DICT = dict(enumerate((
-        [LPAR, RPAR, LSQB, RSQB],
-        [DOT],
-        [DOUBLESTAR, TILDE],
-        [PLUS, MINUS, STAR, SLASH, LEFTSHIFT, RIGHTSHIFT],
-        [AMPER, CIRCUMFLEX, VBAR],
-        [GREATER, GREATEREQUAL, LESS, LESSEQUAL],
-    )))
+    PRIORITY_DICT = dict(
+        enumerate(
+            (
+                [LPAR, RPAR, LSQB, RSQB],
+                [DOT],
+                [DOUBLESTAR, TILDE],
+                [PLUS, MINUS, STAR, SLASH, LEFTSHIFT, RIGHTSHIFT],
+                [AMPER, CIRCUMFLEX, VBAR],
+                [GREATER, GREATEREQUAL, LESS, LESSEQUAL],
+            )
+        )
+    )
 
     # ===| Functions |===
 
     @classmethod
     def from_tokenize(cls, i: int) -> int:
         name = tokenize.tok_name[i]
-        rename = {
-            "NL": "NEWLINE"
-        }
+        rename = {"NL": "NEWLINE"}
         return getattr(cls, rename.get(name, name))
 
     @classmethod

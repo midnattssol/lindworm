@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.10
 import dataclasses as dc
 import io
 import tokenize
@@ -35,8 +36,9 @@ class SimpleToken:
 
         for item in stream:
             # Skip indents and dedents and store it in each token instead.
-            diff_indent = (item.exact_type == tokenize.INDENT) - \
-                (item.exact_type == tokenize.DEDENT)
+            diff_indent = (item.exact_type == tokenize.INDENT) - (
+                item.exact_type == tokenize.DEDENT
+            )
             indent += diff_indent
             if diff_indent:
                 if output:
@@ -49,8 +51,8 @@ class SimpleToken:
 
             # Adds whitespace.
             if prev_item and prev_item != item:
-                newlines = (item.start[0] - prev_item.end[0])
-                spaces = (item.start[1] - prev_item.end[1])
+                newlines = item.start[0] - prev_item.end[0]
+                spaces = item.start[1] - prev_item.end[1]
 
                 if spaces and not newlines:
                     output.append(cls(constants.WHITESPACE, " " * spaces, indent))

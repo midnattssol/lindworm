@@ -1,3 +1,4 @@
+#!/usr/bin/env lindworm
 
 def test_lambda(unittester):
     lambda_0 ==> _ + 3

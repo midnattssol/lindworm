@@ -11,7 +11,9 @@ class UnwrapError(BaseException):
 
 class Result(t.Generic[T]):
     def __init__(self):
-        raise NotImplementedError(f"Instances of type `{type(self)}` should not be initialized directly.")
+        raise NotImplementedError(
+            f"Instances of type `{type(self)}` should not be initialized directly."
+        )
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__}: {self.contents!r}>"
@@ -61,10 +63,7 @@ class Result(t.Generic[T]):
         return type(self)(self.contents)
 
     def __eq__(self, other):
-        return (
-            self.is_ok() == other.is_ok()
-            and self.unwrap() == other.unwrap()
-        )
+        return self.is_ok() == other.is_ok() and self.unwrap() == other.unwrap()
 
     @classmethod
     def from_iterator(cls, iterator):
@@ -77,17 +76,22 @@ class Result(t.Generic[T]):
             if item.is_err():
                 return item
             if not isinstance(item, Result):
-                raise TypeError(f"Result.from_iterator only support Result instances, not {type(item)}")
+                raise TypeError(
+                    f"Result.from_iterator only support Result instances, not {type(item)}"
+                )
             contents.append(item.unwrap())
 
         return Ok(contents)
 
     # === Decorators ===
-    def wrap_with_closure(optional_func: t.Callable[[UnwrapError], t.Any] = (lambda x: ...)) -> t.Callable[OriginalSignature, OriginalSignature]:
+    def wrap_with_closure(
+        optional_func: t.Callable[[UnwrapError], t.Any] = (lambda x: ...)
+    ) -> t.Callable[OriginalSignature, OriginalSignature]:
         """
         Meta-decorator that calls `optional_func` on the exception and
         returns Err() if the function raises an UnwrapError.
         """
+
         def inner(func: OriginalSignature) -> OriginalSignature:
             def replacement_func(*args, **kwargs) -> Result[W]:
                 try:
