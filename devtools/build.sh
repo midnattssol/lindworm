@@ -13,7 +13,7 @@ cd ../lindworm
 pip install .
 cd ../devtools
 
-python build_infix_curry.py > "lindworm/lindworm/data/rules/infix_curry.cson"
+python build_infix_curry.py > "../lindworm/lindworm/data/rules/infix_curry.cson"
 
 echo "- build complete!"
 echo "- running tests..."

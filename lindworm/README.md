@@ -13,7 +13,7 @@ Lindworm is on PyPi, and can be installed with pip from the command line with th
 Lindworm comes with several new operators, as well as ways to combine them. , so it can be easily switched between. It has a high compilation speed and remains both short and relatively readable after compilation. For example:
 
     # Lindworm
-    factorial = => range(1, _) |> fold_left$(*$)
+    factorial ==> range(1, _) |> fold_left$(*$)
     print(factorial(5))
 
 Compiles into this:

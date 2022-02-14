@@ -6,6 +6,6 @@ if ! [ -d $dir ]; then
     mkdir $dir
 fi
 
-target=$(date +"$dir/%F-%T-%N.py")
-sigurd $1 --target $target || exit 1
-python $target
+output=$(date +"$dir/%F-%T-%N.py")
+sigurd $1 --output $output || exit 1
+python $output

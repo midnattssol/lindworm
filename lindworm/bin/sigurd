@@ -44,15 +44,19 @@ def compile2file(args: argparse.ArgumentParser):
 
     if args.output is not None and args.output.exists():
         if args.overwrite_mode == "N":
-            polite_error(f"Cannot overwrite file '{args.output}' (see --help overwrite)")
+            polite_error(
+                f"Cannot overwrite file '{args.output}' (see --help overwrite)"
+            )
 
         metadata_old = compiler.parse_file_metadata(args.output)
         metadata_new = compiler.generate_metadata()
 
-        if (metadata_old is None or metadata_old.get("dialect") != "lindworm"):
+        if metadata_old is None or metadata_old.get("dialect") != "lindworm":
             # The file was not a valid Lindworm file.
             if args.overwrite_mode == "L":
-                polite_error(f"Cannot overwrite non-Lindworm file '{args.output}' (see --help overwrite)")
+                polite_error(
+                    f"Cannot overwrite non-Lindworm file '{args.output}' (see --help overwrite)"
+                )
 
         if not args.force_recompile:
             needs_compiling &= metadata_new["uid"] != metadata_old["uid"]
@@ -78,33 +82,81 @@ def compile2file(args: argparse.ArgumentParser):
         return
 
     else:
-        print(f"Didn't compile '{args.origin}' -> '{args.output}' (hash remained the same).")
+        print(
+            f"Didn't compile '{args.origin}' -> '{args.output}' (hash remained the same)."
+        )
 
 
 def main() -> t.NoReturn:
-    parser = argparse.ArgumentParser(description='Compile Lindworm code to Python.')
-    parser.add_argument('origin', metavar='FILE', type=p.Path, help='origin file')
-    parser.add_argument('--beautifier', metavar='B', dest='beautifier', type=str, help='use the chosen beautifier on the input (default: none)')
-    parser.add_argument('--output', metavar='FILE', dest='output', type=p.Path, help='choose output file for compilation (default: stdout)')
-    parser.add_argument('--logger', metavar='FILE', dest='logger', type=p.Path, help='(dev) choose logfile location (default: none)')
-    parser.add_argument('--dirmode', dest='directory_mode',  action="store_const", const=True,
-                        default=False, help="compile all .lw files in the directory (default: false)")
-    parser.add_argument('--recursive', dest='directory_mode_recursive',  action="store_const", const=True,
-                        default=False, help="in directory mod, compile subdirectories as well (default: false)")
-    parser.add_argument('--bytecode', dest='bytecode_mode',  action="store_const", const=True,
-                        default=False, help="compile files to bytecode instead of Python code (default: false)")
+    parser = argparse.ArgumentParser(description="Compile Lindworm code to Python.")
+    parser.add_argument("origin", metavar="FILE", type=p.Path, help="origin file")
     parser.add_argument(
-        '--overwrite', dest='overwrite_mode', type=str,
-        help="overwrite mode. valid options are [A]lways overwrite, [N]ever overwrite, and only overwrite [L]indworm files. (default: L)"
+        "--beautifier",
+        metavar="B",
+        dest="beautifier",
+        type=str,
+        help="use the chosen beautifier on the input (default: none)",
     )
-    parser.add_argument('--force-recompile', dest='force_recompile',  action="store_const", const=True, default=False,
-                        help='force recompilation even if the hash is the same (default: false)')
+    parser.add_argument(
+        "--output",
+        metavar="FILE",
+        dest="output",
+        type=p.Path,
+        help="choose output file for compilation (default: stdout)",
+    )
+    parser.add_argument(
+        "--logger",
+        metavar="FILE",
+        dest="logger",
+        type=p.Path,
+        help="(dev) choose logfile location (default: none)",
+    )
+    parser.add_argument(
+        "--dirmode",
+        dest="directory_mode",
+        action="store_const",
+        const=True,
+        default=False,
+        help="compile all .lw files in the directory (default: false)",
+    )
+    parser.add_argument(
+        "--recursive",
+        dest="directory_mode_recursive",
+        action="store_const",
+        const=True,
+        default=False,
+        help="in directory mod, compile subdirectories as well (default: false)",
+    )
+    parser.add_argument(
+        "--bytecode",
+        dest="bytecode_mode",
+        action="store_const",
+        const=True,
+        default=False,
+        help="compile files to bytecode instead of Python code (default: false)",
+    )
+    parser.add_argument(
+        "--overwrite",
+        dest="overwrite_mode",
+        type=str,
+        help="overwrite mode. valid options are [A]lways overwrite, [N]ever overwrite, and only overwrite [L]indworm files. (default: L)",
+    )
+    parser.add_argument(
+        "--force-recompile",
+        dest="force_recompile",
+        action="store_const",
+        const=True,
+        default=False,
+        help="force recompilation even if the hash is the same (default: false)",
+    )
 
     args = parser.parse_args()
 
     args.logger = args.logger if args.logger is not None else "/dev/null"
     args.beautifier = args.beautifier if args.beautifier is not None else "none"
-    args.overwrite_mode = args.overwrite_mode if args.overwrite_mode is not None else "L"
+    args.overwrite_mode = (
+        args.overwrite_mode if args.overwrite_mode is not None else "L"
+    )
 
     valid = {
         "beautifier": ["none", "autopep8", "black"],
@@ -113,7 +165,9 @@ def main() -> t.NoReturn:
 
     for key, value in valid.items():
         if getattr(args, key) not in value:
-            formatted_option = (key[0] if isinstance(key, list) and len(key) == 1 else key)
+            formatted_option = (
+                key[0] if isinstance(key, list) and len(key) == 1 else key
+            )
             polite_error(
                 f"'{formatted_option}' is not a valid option for '--{key}' (valid options are {', '.join(value)})"
             )
@@ -133,7 +187,11 @@ def main() -> t.NoReturn:
             polite_error(f"Path {item} is not a valid directory.")
 
         # Find the new mappings.
-        iterator = args.origin.glob("*.lw") if not args.directory_mode_recursive else args.origin.rglob("*.lw")
+        iterator = (
+            args.origin.glob("*.lw")
+            if not args.directory_mode_recursive
+            else args.origin.rglob("*.lw")
+        )
         mappings = {path: str(path).removesuffix(".lw") + ".py" for path in iterator}
         mappings = {k: p.Path(v) for k, v in mappings.items()}
 
@@ -143,5 +201,5 @@ def main() -> t.NoReturn:
             compile2file(args)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

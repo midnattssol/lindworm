@@ -68,10 +68,6 @@ class Replacer:
 
 
 def advanced_format(fmtstr: ReplacerString, item: re.Match, subargs=None) -> str:
-    # Logging
-    print("item:   ", item)
-    print("fmtstr:  ", fmtstr)
-
     subargs = {} if subargs is None else subargs
 
     if item is None:
@@ -94,11 +90,6 @@ def advanced_format(fmtstr: ReplacerString, item: re.Match, subargs=None) -> str
         k = match.group(1).strip()
         lookup_closure = subargs[k] if k != "group" else item_groups
         target = _advanced_format_single(match, fmtstr, item_groups)
-        # # Logging
-        # print("match:   ", match)
-        # print("output:  ", output)
-        # print("origin:  ", origin)
-        # print("target:  ", target)
         output = output.replace(origin, target)
 
     return output
@@ -107,12 +98,12 @@ def advanced_format(fmtstr: ReplacerString, item: re.Match, subargs=None) -> str
 def _advanced_format_single(match: re.Match, fmtstr: str, item_groups: dict) -> str:
     """Regex transformation thing."""
 
-    match_groups = [
-        str.strip(i) if i is not None else None for i in match.groups()]
+    match_groups = [str.strip(i) if i is not None else None for i in match.groups()]
 
     if match_groups[1] not in item_groups:
         raise ValueError(
-            f"No group named {match_groups[1]!r} could be found (valid groups: {sorted(item_groups.keys())}).")
+            f"No group named {match_groups[1]!r} could be found (valid groups: {sorted(item_groups.keys())})."
+        )
 
     # print(match_groups)
     # print(item_groups)
@@ -125,7 +116,8 @@ def _advanced_format_single(match: re.Match, fmtstr: str, item_groups: dict) -> 
         instructions = [i.group(0) for i in instructions]
 
         instructions = [
-            [j.removesuffix(":") for j in re.findall(SUBSUBFORMAT_REGEX, i)] for i in instructions
+            [j.removesuffix(":") for j in re.findall(SUBSUBFORMAT_REGEX, i)]
+            for i in instructions
         ]
 
         for instruction in instructions:
@@ -146,15 +138,14 @@ def _advanced_format_single(match: re.Match, fmtstr: str, item_groups: dict) -> 
                 assert not arguments
                 metaformatter = "{0" + command + "}"
 
-                output = metaformatter.format(
-                    _StrSlicer(output)
-                )
+                output = metaformatter.format(_StrSlicer(output))
             continue
 
     return output
 
 
 # ===| Utilities |===
+
 
 @dc.dataclass
 class _StrSlicer:
@@ -189,4 +180,4 @@ def _parse_slice(item: str) -> slice:
     if ":" not in item:
         return int(item)
 
-    return slice(*map(lambda x: int(x.strip()) if x.strip() else None, item.split(':')))
+    return slice(*map(lambda x: int(x.strip()) if x.strip() else None, item.split(":")))

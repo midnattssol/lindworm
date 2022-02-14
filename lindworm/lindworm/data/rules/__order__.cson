@@ -1,6 +1,7 @@
 # Describes the order of the rules.
 [
     "shorthands",
+    "lambda",
     "datatypes",
     "infix_assign",
     "infix_curry",

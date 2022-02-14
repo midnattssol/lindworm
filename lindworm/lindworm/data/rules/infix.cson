@@ -1,14 +1,14 @@
 # Binary infix operators.
 binary_xor:
-    regex: '(xor)'
+    regex: '\\b(xor)\\b'
     formatter: '(bool({token:-1}) ^ bool({token:1}))'
 
 binary_over:
-    regex: '(over)'
+    regex: '\\b(over)\\b'
     formatter: 'map({token:-1}, {token:1})'
 
 binary_contains:
-    regex: '(contains)'
+    regex: '\\b(contains)\\b'
     formatter: '({token:1} in {token:-1})'
 
 binary_coalesce_none:

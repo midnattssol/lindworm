@@ -17,8 +17,9 @@ from .token import SimpleToken
 
 
 @dc.dataclass
-class PythonDialectTokenization():
+class PythonDialectTokenization:
     """A tokenization of a file written in a Python dialect."""
+
     tokens: t.List[SimpleToken]
     source: str
 
@@ -47,7 +48,9 @@ class PythonDialectTokenization():
 
         for filename in cls.rules_dir.iterdir():
             if filename.suffix != ".cson":
-                raise ValueError(f"Unexpected file '{filename}' in rules directory '{cls.rules_dir}' (expected extension '.cson'.)")
+                raise ValueError(
+                    f"Unexpected file '{filename}' in rules directory '{cls.rules_dir}' (expected extension '.cson'.)"
+                )
 
             if filename.stem == "__order__":
                 with open(filename) as file:
@@ -62,11 +65,7 @@ class PythonDialectTokenization():
         for file_stem in order:
             item = subitems[file_stem]
             rules += [
-                Rule(
-                    k,
-                    **v,
-                    priority=constants.priority_of(constants.LPAR)  # -i
-                )
+                Rule(k, **v, priority=constants.priority_of(constants.LPAR))  # -i
                 for k, v in item.items()
             ]
 
@@ -81,7 +80,7 @@ class PythonDialectTokenization():
 
             # Add indentation.
             if token.exact_type in {constants.NEWLINE, constants.NL}:
-                self.source += (" " * indent * token.indent)
+                self.source += " " * indent * token.indent
 
         return self
 

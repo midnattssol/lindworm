@@ -27,6 +27,7 @@ __version__ = "0.1.0"
 
 # ===| Globals |===
 
+FNDEF_REGEX = re.compile(r"\bdef\b")
 TMP_DIR = p.Path("/tmp")
 
 METADATA_BEGIN = "===| BEGIN LINDWORM METADATA |==="
@@ -38,21 +39,45 @@ BALANCED_TOKENS = {
     constants.LSQB: constants.RSQB,
 }
 
+
 # ===| Classes |===
 
 
 class LindwormTokenization(PythonDialectTokenization):
     """A tokenization of a file written in the Lindworm Python dialect."""
+
     template_dir = PARENT_DIR / "../data/templates"
     rules_dir = PARENT_DIR / "../data/rules"
 
+    def segment_at_definitions(self) -> list:
+        """Returns a list of tokenizations split at function definitions.
+
+        This might make the regex slightly faster as it doesn't have to walk through the entire string."""
+
+        token_accumulator = []
+        source_accumulator = ""
+
+        for token in self.tokens:
+            if token.string == "def":
+                yield type(self)(token_accumulator, source_accumulator, self.logger)
+                token_accumulator = []
+                source_accumulator = ""
+
+            token_accumulator.append(token)
+            source_accumulator += token.string
+
+        if token_accumulator:
+            yield type(self)(token_accumulator, source_accumulator, self.logger)
+
     def generate_metadata(self):
-        origin_digest = hashlib.md5((self.source + __version__).encode("utf-8")).hexdigest()
+        origin_digest = hashlib.md5(
+            (self.source + __version__).encode("utf-8")
+        ).hexdigest()
         metadata = {
             "uid": origin_digest,
             "compiler": {"name": "sigurd", "version": __version__},
             "compilation_time": dt.datetime.now().strftime("%m/%d/%Y, %H:%M:%S"),
-            "dialect": "lindworm"
+            "dialect": "lindworm",
         }
 
         return metadata
@@ -68,52 +93,62 @@ class LindwormTokenization(PythonDialectTokenization):
         if not ("# " + METADATA_BEGIN in string and "# " + METADATA_FINAL in string):
             return None
 
-        metadata_block = string.split("# " + METADATA_BEGIN)[1].split("# " + METADATA_FINAL)[0]
+        metadata_block = string.split("# " + METADATA_BEGIN)[1].split(
+            "# " + METADATA_FINAL
+        )[0]
         metadata_block = (i.removeprefix("# ") for i in metadata_block.splitlines(True))
         try:
             return cson.loads("".join(metadata_block))
         except cson.ParseError:
             return None
 
-    def to_python(self, *, beautifier="none"):
+    def to_python(self, *, beautifier="none", segmented=False):
+
         self.logger.write(f"INFO | Compiling self.\n")
+
+        if segmented:
+            self.compile_tokens()
+            self.rebuild_source(4)
+            return self.source
+
+        # Segments the code and compiles it one segment at a time.
+        # This speeds up the compilation, since the regexes don't have to go through
+        # everything over and over again.
         self.convert_multiline_comments()
+        self.logger.write(f"INFO | Segmenting self.\n")
+        result = ""
+        for i, segment in enumerate(self.segment_at_definitions()):
+            self.logger.write(f"INFO | Rendering segment #{i}.\n")
+            result += segment.to_python(beautifier=beautifier, segmented=True)
 
         metadata = self.generate_metadata()
-        self.compile_tokens()
-        template = load_template(self.template_dir / "default.py.mako")
-
         metadata_lines = cson.dumps(metadata, indent=4).splitlines()
         metadata_lines.insert(0, METADATA_BEGIN)
         metadata_lines.append(METADATA_FINAL)
 
         metadata_str = "\n".join(map("# ".__add__, metadata_lines))
 
-        compiled = template.render(
-            source=self.source,
-            metadata=metadata_str
-        )
-
         if beautifier == "autopep8":
             import autopep8
-            compiled = autopep8.fix_code(compiled, {'aggressive': 3})
+
+            result = autopep8.fix_code(result, {"aggressive": 3})
 
         elif beautifier == "black":
             # Buffer the code into a temporary file to run black
             # from the command line on it.
             filename = tempfile()
             with open(filename, "w", encoding="utf-8") as file:
-                file.write(compiled)
+                file.write(result)
             subprocess.run(["black", filename, "-q"])
             with open(filename, "r", encoding="utf-8") as file:
-                compiled = file.read()
+                result = file.read()
 
         elif beautifier != "none":
             raise ValueError(f"Unknown beautifier '{beautifier}'")
 
+        result = TEMPLATE.render(source=result, metadata=metadata_str)
         self.logger.write(f"INFO | Compilation done!.\n")
-
-        return compiled
+        return result
 
     def compile_tokens(self):
         pointer = 0
@@ -145,15 +180,16 @@ class LindwormTokenization(PythonDialectTokenization):
                         first_matches.append((rule, result))
 
                     first_matches = [
-                        (k, v) for k, v in first_matches
+                        (k, v)
+                        for k, v in first_matches
                         if v is not None
                         and self.exact_type_at(v.span()[0]) not in ignored
                     ]
 
                     first_matches = sorted(
                         first_matches,
-                        key=lambda x: (x[1].span()[0], - x[1].span()[1]),
-                        reverse=True
+                        key=lambda x: (x[1].span()[0], -x[1].span()[1]),
+                        reverse=True,
                     )
 
                     if first_matches:
@@ -183,7 +219,9 @@ class LindwormTokenization(PythonDialectTokenization):
             rule = match[0]
             mapping, consumed = self.get_replacement(rule, match, range(low, high))
             self.logger.write(f"RULE | {mapping, consumed}\n")
-            self.logger.write(f"TOKENS | {min(consumed)} and up: {self.tokens[min(consumed):max(consumed)]}\n")
+            self.logger.write(
+                f"TOKENS | {min(consumed)} and up: {self.tokens[min(consumed):max(consumed)]}\n"
+            )
 
             new_item = rule.formatter
             for key, value in mapping.items():
@@ -197,7 +235,9 @@ class LindwormTokenization(PythonDialectTokenization):
             token_dict = dict(enumerate(self.tokens))
             token_dict = {k: [v] for k, v in token_dict.items() if k not in consumed}
 
-            tokenization_of_subgroup = list(SimpleToken.tokenize(new_item.encode("utf-8")))
+            tokenization_of_subgroup = list(
+                SimpleToken.tokenize(new_item.encode("utf-8"))
+            )
             token_dict[low] = tokenization_of_subgroup
 
             self.tokens = [i[1] for i in sorted(token_dict.items())]
@@ -216,12 +256,13 @@ class LindwormTokenization(PythonDialectTokenization):
         """Returns the neighbouring group of tokens."""
         enumerated = list(enumerate(self.tokens))
 
+        balancer = BALANCED_TOKENS.copy()
+        unbalancer = reversed_dict(BALANCED_TOKENS.copy())
         if direction == 1:
             token_items = enumerated[pointer:][::direction]
-            balancer = reversed_dict(BALANCED_TOKENS.copy())
         else:
+            balancer, unbalancer = unbalancer, balancer
             token_items = enumerated[:pointer][::direction]
-            balancer = BALANCED_TOKENS.copy()
 
         done = False
         force_terminate = False
@@ -229,37 +270,33 @@ class LindwormTokenization(PythonDialectTokenization):
         consumed = set()
         balanced_tokens_depths = {k: 0 for k in balancer}
 
-        ENDING = {constants.WHITESPACE, constants.ERRORTOKEN, constants.NUMBER, constants.STRING,
-                  constants.DOT, constants.NAME, constants.COLON, constants.LBRACE, constants.RBRACE}
+        ENDING = {
+            constants.COLON,
+            constants.DOT,
+            constants.ERRORTOKEN,
+            constants.LBRACE,
+            constants.NAME,
+            constants.NUMBER,
+            constants.RBRACE,
+            constants.STRING,
+            constants.WHITESPACE,
+        }
         LEADING = {constants.WHITESPACE, constants.ERRORTOKEN, constants.NEWLINE}
         TERM = {constants.EQUAL}
 
         for index, token in token_items:
             self.logger.write(f"TOKEN | {token} {done} {direction}\n")
-
-            if (
-                (
-                    # Avoid going into a new line or another expression if the line is balanced.
-                    token.exact_type in {constants.NEWLINE, constants.COMMA}
-                    and not any(balanced_tokens_depths.values())
-                )
-                or (
-                    # Avoid going backwards into assignments.
-                    token.exact_type in TERM
-                    and direction == -1
-                )
-                or (
-                    token.exact_type in balanced_tokens_depths.keys()
-                    and not any(balanced_tokens_depths.values())
-                )
+            if not any(balanced_tokens_depths.values()) and (
+                # Avoid going into a new line or another expression if the line is balanced.
+                token.exact_type in {constants.NEWLINE, constants.COMMA}
+                or (token.exact_type in unbalancer.keys())
+                # Avoid going backwards into assignments.
+                or (token.exact_type in TERM and direction == -1)
             ):
                 break
 
             # Avoids returning early from consuming leading whitespace tokens.
-            if (
-                (not done and token.exact_type in LEADING)
-                or token.exact_type in ENDING
-            ):
+            if (not done and token.exact_type in LEADING) or token.exact_type in ENDING:
                 output.append(index)
                 consumed.add(index)
                 continue
@@ -281,18 +318,16 @@ class LindwormTokenization(PythonDialectTokenization):
             # Add or subtract to the balance if necessary.
             for k, v in balancer.items():
                 if token.exact_type in (k, v):
-                    balanced_tokens_depths[k] += ((token.exact_type == k) - (token.exact_type == v))
+                    balanced_tokens_depths[k] += (token.exact_type == k) - (
+                        token.exact_type == v
+                    )
                     break
 
-            if token.exact_type != constants.INDENT:
-                output.append(index)
-                consumed.add(index)
+            output.append(index)
+            consumed.add(index)
             done = True
 
-        return {
-            "consumed": consumed,
-            "output": output[::direction]
-        }
+        return {"consumed": consumed, "output": output[::direction]}
 
     def get_replacement(self, rule: Rule, match, matched_range: list) -> tuple:
         items = re.finditer(FORMAT_REGEX, rule.formatter)
@@ -330,13 +365,20 @@ class LindwormTokenization(PythonDialectTokenization):
         # Gets all items between the maximum and minimum token.
         for submatch in {maxtoken, mintoken} - {-np.inf, np.inf}:
             direction = np.sign(submatch)
-            inner_pointer = matched_range.stop if direction == 1 else matched_range.start
+            inner_pointer = (
+                matched_range.stop if direction == 1 else matched_range.start
+            )
 
             for n in range(np.abs(submatch)):
-                token_indices = self.neighbouring_tokengroup(inner_pointer, direction, rule)
-                self.logger.write((f"TOKENINDICES | {token_indices!r}\n"))
+                token_indices = self.neighbouring_tokengroup(
+                    inner_pointer, direction, rule
+                )
                 assert token_indices["consumed"]
-                inner_pointer = max(token_indices["consumed"]) if direction == 1 else min(token_indices["consumed"])
+                inner_pointer = (
+                    max(token_indices["consumed"])
+                    if direction == 1
+                    else min(token_indices["consumed"])
+                )
 
                 matched_items = [self.tokens[i].string for i in token_indices["output"]]
                 matched_items_string = "".join(matched_items)
@@ -354,7 +396,7 @@ class LindwormTokenization(PythonDialectTokenization):
                         temp = temp.replace(re.search(r"-?\d+", temp).group(), "0")
                         # MAGIC
 
-                        replacer = Replacer("(.*)", temp)
+                        replacer = Replacer("((?>.|\n)*)", temp)
                         mapping[token_name] = replacer.format(matched_items_string)
 
                 # what does this do
@@ -395,7 +437,7 @@ class LindwormTokenization(PythonDialectTokenization):
         in_comment = False
         new_tokens = []
 
-        # TODO: This just removes them but it would be nice to keep them
+        # TODO: This just removes them but it would be nice to keep them as single-line comments.
         for token in self.tokens:
             if token.exact_type == constants.COMMENT and token.string.startswith("###"):
                 in_comment = not in_comment
@@ -407,7 +449,17 @@ class LindwormTokenization(PythonDialectTokenization):
         self.tokens = new_tokens
         self.rebuild_source()
 
+
 # ===| Functions |===
+
+
+def parse_metadata(contents):
+    md_begin_index = contents.index(METADATA_BEGIN)
+    md_final_index = contents.index(METADATA_FINAL)
+    return (
+        contents[:md_begin_index] + contents[md_final_index:],
+        contents[md_begin_index:md_final_index],
+    )
 
 
 def load_template(path: p.Path) -> mako.template:
@@ -417,7 +469,4 @@ def load_template(path: p.Path) -> mako.template:
     return template
 
 
-def parse_metadata(contents):
-    md_begin_index = contents.index(METADATA_BEGIN)
-    md_final_index = contents.index(METADATA_FINAL)
-    return contents[:md_begin_index] + contents[md_final_index:], contents[md_begin_index:md_final_index]
+TEMPLATE = load_template(LindwormTokenization.template_dir / "default.py.mako")

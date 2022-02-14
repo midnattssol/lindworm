@@ -8,8 +8,6 @@ import regex as re
 from ..utils import *
 from .constants import constants
 
-# FORMAT_REGEX = re.compile(r"\{([^{}:]*):(-?[^{}\-:]*)(?>->([^{}]*))?\}")
-
 
 @dc.dataclass(eq=True, unsafe_hash=True)
 class Rule:
@@ -25,10 +23,19 @@ class Rule:
     def __lt__(self, o):
         return self.priority < o.priority
 
-    def __init__(self, name, regex, tags=None, formatter=None, *, consumed=None, delimiters=None, priority=constants.priority_of(constants.LPAR)):
+    def __init__(
+        self,
+        name,
+        regex,
+        tags=None,
+        formatter=None,
+        *,
+        consumed=None,
+        delimiters=None,
+        priority=constants.priority_of(constants.LPAR),
+    ):
         self.name = name
         self.regex = re.compile(regex, re.W | re.M | re.X)
-        # self.formatter = Replacer(regex, formatter)
         self.formatter = formatter
         self.consumed = consumed
         self.tags = tuple(tags) if tags else tuple()
