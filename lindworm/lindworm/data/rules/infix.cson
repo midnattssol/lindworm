@@ -29,7 +29,7 @@ binary_compose_left:
     formatter: 'lindworm.header.compose({token:-1},{token:1},False,{ group:stars -> len })'
 
 binary_compose_right:
-    regex: '\\.\\.(?<stars>(?>\\w*\\*\\w*){0,2})>?'
+    regex: '\\.\\.(?<stars>(?>\\w*\\*\\w*){0,2})>'
     formatter: 'lindworm.header.compose({token:-1},{token:1},True,{ group:stars -> len })'
 
 # Piping
